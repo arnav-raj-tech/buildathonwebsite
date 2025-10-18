@@ -332,4 +332,121 @@
 
     <footer>2025 Student Budget Buddy | Made for students, by students 💸 <button id="theme-switcher">Toggle
             Theme</button></footer>
+<body>
+  <div class="container">
+    <h2>💬 AI Expense Assistant</h2>
+    <input type="number" id="amount" placeholder="Enter amount (₹)">
+    <input type="text" id="category" placeholder="Enter category (e.g., Food)">
+    <button onclick="addExpense()">Add Expense</button>
+    <button onclick="showSummary()">Show Summary</button>
+    <div id="summary"></div>
+    <hr>
+    <div class="chat-box" id="chatBox"></div>
+    <input type="text" id="userInput" placeholder="Ask something..." onkeypress="if(event.key==='Enter') sendMessage()">
+    <button onclick="sendMessage()">Send</button>
+  </div>
 
+  <script>
+    // ----------------- Expense Logic -----------------
+    let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+    function addExpense() {
+      const amount = parseFloat(document.getElementById('amount').value);
+      const category = document.getElementById('category').value.trim();
+
+      if (!amount || !category) {
+        alert("Please enter amount and category!");
+        return;
+      }
+
+      const expense = {
+        amount: amount,
+        category: category,
+        date: new Date().toLocaleDateString()
+      };
+
+      expenses.push(expense);
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+
+      document.getElementById('amount').value = '';
+      document.getElementById('category').value = '';
+      alert("✅ Expense added!");
+    }
+
+    function showSummary() {
+      let total = expenses.reduce((sum, e) => sum + e.amount, 0);
+      let summaryHTML = <h4>Total Spent: ₹${total}</h4>;
+      
+      let categories = {};
+      expenses.forEach(e => {
+        categories[e.category] = (categories[e.category] || 0) + e.amount;
+      });
+
+      summaryHTML += "<ul>";
+      for (let cat in categories) {
+        summaryHTML += <li>${cat}: ₹${categories[cat]}</li>;
+      }
+      summaryHTML += "</ul>";
+
+      document.getElementById('summary').innerHTML = summaryHTML;
+    }
+
+    // ----------------- AI Chat Logic (Frontend-only) -----------------
+    const API_KEY = "YOUR_OPENAI_API_KEY"; // ⚠ For local testing only
+    const chatBox = document.getElementById('chatBox');
+    const userInput = document.getElementById('userInput');
+
+    let conversation = [
+      { role: "system", content: "You are a friendly AI assistant that helps users manage their monthly expenses and budgets." }
+    ];
+
+    async function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+      appendMessage('user', text);
+      userInput.value = '';
+
+      conversation.push({ role: "user", content: text });
+
+      appendMessage('bot', "💭 Thinking...");
+      const response = await callOpenAI(text);
+      const lastMsg = chatBox.querySelector('.bot:last-child');
+      lastMsg.remove();
+      appendMessage('bot', response);
+    }
+
+    function appendMessage(sender, text) {
+      const msgDiv = document.createElement('div');
+      msgDiv.classList.add('msg', sender);
+      msgDiv.innerText = (sender === 'user' ? "🧑 You: " : "🤖 Bot: ") + text;
+      chatBox.appendChild(msgDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function callOpenAI(userMessage) {
+      try {
+        const messages = [...conversation, { role: "user", content: userMessage }];
+        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": Bearer ${API_KEY}
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: messages,
+            max_tokens: 200
+          })
+        });
+        const data = await res.json();
+        const reply = data.choices?.[0]?.message?.content || "Sorry, I couldn’t understand.";
+        conversation.push({ role: "assistant", content: reply });
+        return reply;
+      } catch (error) {
+        console.error(error);
+        return "⚠ Error connecting to AI. Please check your key or internet.";
+      }
+    }
+  </script>
+</body>
+</html>
