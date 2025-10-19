@@ -1,444 +1,382 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A comprehensive expense tracker for students to manage budgets and track spending.">
-    <meta name="author" content="Your Name">
-    <meta name="theme-color" content="#2196f3">
-    <title>Expense Tracker | Student Budget Buddy</title>
-    
-    <!-- PWA Manifest for installability -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="data:;base64,iVB=..." type="image/x-icon"> <!-- Placeholder for favicon -->
-    
-    <!-- Fonts and Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <!-- Chart.js for visualizations -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            background: linear-gradient(135deg, #f8faff, #d7ecf7);
-            color: #333;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-        
-        body.dark-mode {
-            background: linear-gradient(135deg, #121212, #1f1f1f);
-            color: #e0e0e0;
-        }
-        
-        header {
-            background: #2196f3;
-            color: white;
-            text-align: center;
-            padding: 20px 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            animation: fadeIn 0.5s ease;
-        }
-        
-        nav {
-            background: #1976d2;
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            padding: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            transition: all 0.3s ease;
-        }
-        
-        nav a:hover {
-            background: rgba(255,255,255,0.1);
-            border-radius: 5px;
-            text-decoration: none;
-        }
-        
-        .container {
-            max-width: 900px;
-            background: white;
-            margin: 30px auto;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            animation: fadeIn 0.5s ease;
-            transition: background 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        body.dark-mode .container {
-            background: #1e1e1e;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-        
-        input, select, button {
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            margin-right: 10px;
-            transition: all 0.3s ease;
-        }
-        
-        body.dark-mode input, body.dark-mode select {
-            background: #2c2c2c;
-            color: #e0e0e0;
-            border-color: #555;
-        }
-        
-        button {
-            background: #2196f3;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        
-        button:hover {
-            background: #1976d2;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        th, td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-        
-        body.dark-mode th, body.dark-mode td {
-            border-color: #444;
-        }
-        
-        th {
-            background: #e3f2fd;
-            cursor: pointer; /* For sorting */
-        }
-        
-        body.dark-mode th {
-            background: #333;
-        }
-        
-        tr:hover {
-            background: #f1f1f1;
-            transition: background 0.3s ease;
-        }
-        
-        body.dark-mode tr:hover {
-            background: #333;
-        }
-        
-        .delete-btn, .edit-btn {
-            background: #f44336;
-            color: white;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 5px;
-            transition: background 0.3s ease;
-        }
-        
-        .edit-btn {
-            background: #4caf50;
-        }
-        
-        .delete-btn:hover {
-            background: #c62828;
-        }
-        
-        .edit-btn:hover {
-            background: #388e3c;
-        }
-        
-        .summary {
-            margin-top: 15px;
-            font-weight: bold;
-            text-align: right;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        .budget-warning {
-            color: red;
-            font-size: 1.1em;
-            margin-top: 10px;
-        }
-        
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            margin: 20px auto;
-            max-width: 800px;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-        
-        /* Chart Styles */
-        .chart-container {
-            margin-top: 20px;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        /* Dark Mode Toggle */
-        .theme-toggle {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #2196f3;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2em;
-        }
-        
-        body.dark-mode .theme-toggle {
-            background: #333;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A comprehensive student expense tracker with smart tips, warnings, and budget analytics.">
+<title>Expense Tracker | Student Budget Buddy</title>
+
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        margin:0;
+        background: linear-gradient(135deg, #d2f7d2, #a0e9a0);
+        color: #333;
+        transition: all 0.3s ease;
+    }
+    header{
+        background: #00a651;
+        color: white;
+        text-align:center;
+        padding:20px 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+    nav{
+        background: #007f3f;
+        display:flex;
+        justify-content:center;
+        gap:25px;
+        padding:10px;
+    }
+    nav a{
+        color:white;
+        text-decoration:none;
+        padding:8px 12px;
+        border-radius:5px;
+        transition: all 0.3s ease;
+    }
+    nav a:hover{
+        background: rgba(255,255,255,0.2);
+    }
+    .container{
+        max-width:900px;
+        margin:30px auto;
+        background:white;
+        padding:25px;
+        border-radius:12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        animation: fadeIn 0.5s ease;
+    }
+    input, select, button{
+        padding:10px;
+        border-radius:6px;
+        border:1px solid #ccc;
+        margin-right:10px;
+        margin-top:10px;
+        transition: all 0.3s ease;
+    }
+    button{
+        background:#00a651;
+        color:white;
+        border:none;
+        cursor:pointer;
+    }
+    button:hover{
+        background:#007f3f;
+    }
+    table{
+        width:100%;
+        border-collapse: collapse;
+        margin-top:20px;
+    }
+    th, td{
+        padding:10px;
+        border-bottom:1px solid #ddd;
+        text-align:center;
+    }
+    th{
+        background:#c4f0c4;
+        cursor:pointer;
+    }
+    tr:hover{
+        background:#e5ffe5;
+    }
+    .delete-btn, .edit-btn{
+        padding:6px 10px;
+        border:none;
+        border-radius:5px;
+        cursor:pointer;
+        color:white;
+    }
+    .edit-btn{
+        background:#4caf50;
+    }
+    .edit-btn:hover{background:#388e3c;}
+    .delete-btn{
+        background:#f44336;
+    }
+    .delete-btn:hover{background:#c62828;}
+    .summary{
+        margin-top:15px;
+        font-weight:bold;
+        text-align:right;
+    }
+    .budget-warning{
+        color:red;
+        font-size:1.1em;
+        margin-top:10px;
+        display:none;
+    }
+    .video-container{
+        position:relative;
+        padding-bottom:56.25%;
+        height:0;
+        overflow:hidden;
+        border-radius:12px;
+        margin:20px auto;
+        max-width:800px;
+        box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    }
+    .video-container iframe{
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        border:0;
+    }
+    .tip-popup{
+        position:fixed;
+        bottom:20px;
+        left:50%;
+        transform:translateX(-50%);
+        background:#fff;
+        border-radius:12px;
+        padding:12px 20px;
+        box-shadow:0 5px 15px rgba(0,0,0,0.3);
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-weight:500;
+        z-index:9999;
+        animation: slideUp 0.5s ease;
+    }
+    @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
+    @keyframes slideUp{from{transform:translateY(20px) translateX(-50%); opacity:0;} to{transform:translateY(0) translateX(-50%); opacity:1;}}
+</style>
 </head>
 <body>
-    <header>
-        <h1>Expense Tracker</h1>
-        <button class="theme-toggle" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
-    </header>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="tracker.html">Expense Tracker</a>
-        <a href="tips.html">Money Tips</a>
-    </nav>
+<header>
+<h1>Expense Tracker</h1>
+</header>
+<nav>
+<a href="index.html">Home</a>
+<a href="tracker.html">Expense Tracker</a>
+<a href="tips.html">Money Tips</a>
+</nav>
 
-    <div class="container">
-        <h2>Add a New Expense</h2>
-        <input type="text" id="desc" placeholder="Description" aria-label="Expense Description" required>
-        <input type="number" id="amount" placeholder="Amount ₹" aria-label="Expense Amount" min="0" step="0.01" required>
-        <select id="category" aria-label="Expense Category">
-            <option value="Food">Food <i class="fas fa-utensils"></i></option>
-            <option value="Transport">Transport <i class="fas fa-car"></i></option>
-            <option value="Books">Books <i class="fas fa-book"></i></option>
-            <option value="Leisure">Leisure <i class="fas fa-gamepad"></i></option>
-            <option value="Others">Others <i class="fas fa-ellipsis-h"></i></option>
-        </select>
-        <input type="date" id="date" aria-label="Expense Date" value="" required>
-        <button onclick="addExpense()">Add Expense</button>
-        
-        <h3>Expense List</h3>
-        <input type="text" id="search" placeholder="Search expenses..." aria-label="Search Expenses">
-        <button onclick="searchExpenses()">Search</button>
-        
-        <table id="expenseTable">
-            <thead>
-                <tr>
-                    <th onclick="sortTable(0)">Description</th>
-                    <th onclick="sortTable(1)">Category</th>
-                    <th onclick="sortTable(2)">Amount</th>
-                    <th onclick="sortTable(3)">Date</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        
-        <div class="summary">
-            Total Spent: ₹<span id="total">0</span>
-            <span id="budget-status"></span>
-        </div>
-        <div class="budget-warning" id="budget-warning" style="display: none;">Warning: You've exceeded your budget!</div>
-        
-        <h3>Budget Settings</h3>
-        <input type="number" id="budget" placeholder="Set Monthly Budget ₹" aria-label="Set Budget">
-        <button onclick="setBudget()">Set Budget</button>
-        
-        <h3>Expense Breakdown</h3>
-        <div class="chart-container">
-            <canvas id="expenseChart"></canvas>
-        </div>
-        
-        <div class="video-container">
-            <iframe src="https://www.youtube.com/embed/MXCvtC0HqLE?start=478&autoplay=1" title="Money Management for Students" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-        
-        <button onclick="exportData()">Export to CSV</button>
-        <input type="file" id="importFile" accept=".csv" onchange="importData(event)">
-    </div>
+<div class="container">
+<h2>Add a New Expense</h2>
+<input type="text" id="desc" placeholder="Description">
+<input type="number" id="amount" placeholder="Amount ₹" min="0" step="0.01">
+<select id="category" onchange="checkOthers(this.value)">
+    <option value="Food">Food</option>
+    <option value="Transport">Transport</option>
+    <option value="Books">Books</option>
+    <option value="Leisure">Leisure</option>
+    <option value="Others">Others</option>
+</select>
+<input type="text" id="otherCategory" placeholder="Specify if Others" style="display:none;">
+<input type="date" id="date">
+<button onclick="addExpense()">Add Expense</button>
 
-    <script>
-        let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
-        let budget = parseFloat(localStorage.getItem("budget")) || 0;
-        let isDarkMode = false;
+<h3>Expense List</h3>
+<input type="text" id="search" placeholder="Search expenses...">
+<button onclick="searchExpenses()">Search</button>
 
-        function saveData() {
-            localStorage.setItem("expenses", JSON.stringify(expenses));
-            localStorage.setItem("budget", budget);
+<table id="expenseTable">
+<thead>
+<tr>
+<th onclick="sortTable(0)">Description</th>
+<th onclick="sortTable(1)">Category</th>
+<th onclick="sortTable(2)">Amount</th>
+<th onclick="sortTable(3)">Date</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<div class="summary">
+Total Spent: ₹<span id="total">0</span>
+<span id="budget-status"></span>
+</div>
+<div class="budget-warning" id="budget-warning">Warning: You've exceeded your budget!</div>
+
+<h3>Budget Settings</h3>
+<input type="number" id="budget" placeholder="Set Monthly Budget ₹">
+<button onclick="setBudget()">Set Budget</button>
+
+<h3>Expense Breakdown</h3>
+<div class="chart-container">
+<canvas id="expenseChart"></canvas>
+</div>
+
+<div class="video-container">
+<iframe src="https://www.youtube.com/embed/MXCvtC0HqLE?start=478&autoplay=0" title="Money Management for Students" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</div>
+
+<script>
+let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+let budget = parseFloat(localStorage.getItem("budget")) || 0;
+
+function saveData(){
+    localStorage.setItem("expenses", JSON.stringify(expenses));
+    localStorage.setItem("budget", budget);
+}
+
+function checkOthers(val){
+    const otherInput = document.getElementById("otherCategory");
+    otherInput.style.display = val==="Others" ? "inline-block":"none";
+    if(val==="Others") otherInput.focus();
+}
+
+function addExpense(){
+    const desc = document.getElementById("desc").value.trim();
+    const amount = parseFloat(document.getElementById("amount").value);
+    let category = document.getElementById("category").value;
+    const otherCat = document.getElementById("otherCategory").value.trim();
+    if(category==="Others" && otherCat) category=otherCat;
+    const date = document.getElementById("date").value || new Date().toISOString().split('T')[0];
+    if(!desc || isNaN(amount) || amount<=0){ alert("Enter valid description and positive amount!"); return;}
+    expenses.push({desc, amount, category, date});
+    saveData();
+    renderTable();
+    clearForm();
+}
+
+function clearForm(){
+    document.getElementById("desc").value="";
+    document.getElementById("amount").value="";
+    document.getElementById("category").value="Food";
+    document.getElementById("otherCategory").value="";
+    document.getElementById("otherCategory").style.display="none";
+    document.getElementById("date").value="";
+}
+
+function renderTable(){
+    const tbody = document.querySelector("#expenseTable tbody");
+    tbody.innerHTML="";
+    let total=0;
+    const catTotals={};
+
+    expenses.forEach((item,index)=>{
+        total+=parseFloat(item.amount);
+        catTotals[item.category]= (catTotals[item.category] || 0)+parseFloat(item.amount);
+        tbody.innerHTML+=`<tr>
+        <td>${item.desc}</td>
+        <td>${item.category}</td>
+        <td>₹${item.amount.toFixed(2)}</td>
+        <td>${item.date}</td>
+        <td>
+            <button class="edit-btn" onclick="editExpense(${index})">Edit</button>
+            <button class="delete-btn" onclick="deleteExpense(${index})">Delete</button>
+        </td>
+        </tr>`;
+    });
+
+    document.getElementById("total").innerText=total.toFixed(2);
+    checkBudget(total);
+    renderChart(catTotals);
+    smartTips(total,catTotals);
+}
+
+function deleteExpense(index){ expenses.splice(index,1); saveData(); renderTable(); }
+function editExpense(index){
+    const newDesc = prompt("Edit Description:", expenses[index].desc);
+    const newAmount = prompt("Edit Amount:", expenses[index].amount);
+    const newCategory = prompt("Edit Category:", expenses[index].category);
+    const newDate = prompt("Edit Date (YYYY-MM-DD):", expenses[index].date);
+    if(newDesc && !isNaN(newAmount) && newAmount>0 && newCategory && newDate){
+        expenses[index]={desc:newDesc, amount:parseFloat(newAmount), category:newCategory, date:newDate};
+        saveData(); renderTable();
+    } else alert("Invalid input!");
+}
+
+function sortTable(col){
+    expenses.sort((a,b)=>{
+        if(col===2) return a.amount-b.amount;
+        if(col===3) return new Date(a.date)-new Date(b.date);
+        const keys=["desc","category"]; return a[keys[col]]>b[keys[col]]?1:-1;
+    });
+    renderTable();
+}
+
+function searchExpenses(){
+    const query=document.getElementById("search").value.toLowerCase();
+    const filtered=expenses.filter(exp=>exp.desc.toLowerCase().includes(query) || exp.category.toLowerCase().includes(query));
+    renderFilteredTable(filtered);
+}
+
+function renderFilteredTable(filtered){
+    const tbody = document.querySelector("#expenseTable tbody");
+    tbody.innerHTML="";
+    filtered.forEach(item=>{
+        const index=expenses.indexOf(item);
+        tbody.innerHTML+=`<tr>
+        <td>${item.desc}</td>
+        <td>${item.category}</td>
+        <td>₹${item.amount.toFixed(2)}</td>
+        <td>${item.date}</td>
+        <td>
+            <button class="edit-btn" onclick="editExpense(${index})">Edit</button>
+            <button class="delete-btn" onclick="deleteExpense(${index})">Delete</button>
+        </td>
+        </tr>`;
+    });
+}
+
+function setBudget(){
+    budget=parseFloat(document.getElementById("budget").value);
+    saveData();
+    checkBudget(parseFloat(document.getElementById("total").innerText));
+}
+
+function checkBudget(total){
+    const warning = document.getElementById("budget-warning");
+    const status = document.getElementById("budget-status");
+    if(budget>0 && total>budget){ warning.style.display="block"; status.innerText=` (Budget: ₹${budget})`; }
+    else{ warning.style.display="none"; status.innerText=` (Budget: ₹${budget})`; }
+}
+
+let chartInstance=null;
+function renderChart(catTotals){
+    const ctx=document.getElementById("expenseChart").getContext("2d");
+    if(chartInstance) chartInstance.destroy();
+    chartInstance=new Chart(ctx,{
+        type:'pie',
+        data:{
+            labels:Object.keys(catTotals),
+            datasets:[{
+                data:Object.values(catTotals),
+                backgroundColor:['#a5d6a7','#66bb6a','#388e3c','#00c853','#b9f6ca','#00e676','#1b5e20']
+            }]
         }
+    });
+}
 
-        function renderTable() {
-            const tbody = document.querySelector("#expenseTable tbody");
-            tbody.innerHTML = "";
-            let total = 0;
-            const categoryTotals = {};
+function showTip(message){
+    const popup=document.createElement("div");
+    popup.className="tip-popup";
+    popup.innerHTML=`<i class="fas fa-lightbulb" style="color:#ffc107;"></i> ${message}`;
+    document.body.appendChild(popup);
+    setTimeout(()=>{ popup.remove(); },5000);
+}
 
-            expenses.forEach((item, index) => {
-                total += parseFloat(item.amount);
-                if (!categoryTotals[item.category]) categoryTotals[item.category] = 0;
-                categoryTotals[item.category] += parseFloat(item.amount);
-                
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${item.desc}</td>
-                        <td>${item.category}</td>
-                        <td>₹${item.amount}</td>
-                        <td>${item.date}</td>
-                        <td>
-                            <button class="edit-btn" onclick="editExpense(${index})">Edit</button>
-                            <button class="delete-btn" onclick="deleteExpense(${index})">Delete</button>
-                        </td>
-                    </tr>`;
-            });
-
-            document.getElementById("total").innerText = total.toFixed(2);
-            checkBudget(total);
-            renderChart(categoryTotals);
+function smartTips(total, catTotals){
+    // Food over 40%
+    if((catTotals['Food']||0)/total*100>40) showTip("🍔 Food is taking over your budget! Consider cheaper meals.");
+    // Close to budget
+    if(budget>0 && total>budget*0.9) showTip("⚠️ You're close to your monthly budget! Track carefully.");
+    // Dynamic Others
+    Object.keys(catTotals).forEach(cat=>{
+        if(!['Food','Transport','Books','Leisure'].includes(cat)){
+            if(catTotals[cat]/total*100>30) showTip(`💡 ${cat} is taking over your budget! Consider saving money.`);
         }
+    });
+}
 
-        function addExpense() {
-            const desc = document.getElementById("desc").value.trim();
-            const amount = parseFloat(document.getElementById("amount").value);
-            const category = document.getElementById("category").value;
-            const date = document.getElementById("date").value || new Date().toISOString().split('T')[0];
-
-            if (!desc || isNaN(amount) || amount <= 0) {
-                alert("Please enter a valid description and positive amount!");
-                return;
-            }
-
-            expenses.push({ desc, amount, category, date });
-            saveData();
-            renderTable();
-            clearForm();
-        }
-
-        function deleteExpense(index) {
-            expenses.splice(index, 1);
-            saveData();
-            renderTable();
-        }
-
-        function editExpense(index) {
-            const newDesc = prompt("Edit Description:", expenses[index].desc);
-            const newAmount = prompt("Edit Amount:", expenses[index].amount);
-            const newCategory = prompt("Edit Category:", expenses[index].category);
-            const newDate = prompt("Edit Date (YYYY-MM-DD):", expenses[index].date);
-
-            if (newDesc && !isNaN(newAmount) && newAmount > 0 && newCategory && newDate) {
-                expenses[index] = { desc: newDesc, amount: parseFloat(newAmount), category: newCategory, date: newDate };
-                saveData();
-                renderTable();
-            } else {
-                alert("Invalid input!");
-            }
-        }
-
-        function sortTable(column) {
-            expenses.sort((a, b) => {
-                if (column === 2) return a.amount - b.amount; // Amount
-                if (column === 3) return new Date(a.date) - new Date(b.date); // Date
-                return a[expenses.columns[column]] > b[expenses.columns[column]] ? 1 : -1;
-            });
-            renderTable();
-        }
-
-        function searchExpenses() {
-            const query = document.getElementById("search").value.toLowerCase();
-            const filtered = expenses.filter(exp => exp.desc.toLowerCase().includes(query) || exp.category.toLowerCase().includes(query));
-            renderFilteredTable(filtered);
-        }
-
-        function renderFilteredTable(filteredExpenses) {
-            const tbody = document.querySelector("#expenseTable tbody");
-            tbody.innerHTML = "";
-            filteredExpenses.forEach((item, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${item.desc}</td>
-                        <td>${item.category}</td>
-                        <td>₹${item.amount}</td>
-                        <td>${item.date}</td>
-                        <td>
-                            <button class="edit-btn" onclick="editExpense(${expenses.indexOf(item)})">Edit</button>
-                            <button class="delete-btn" onclick="deleteExpense(${expenses.indexOf(item)})">Delete</button>
-                        </td>
-                    </tr>`;
-            });
-        }
-
-        function setBudget() {
-            budget = parseFloat(document.getElementById("budget").value);
-            saveData();
-            checkBudget(document.getElementById("total").innerText);
-        }
-
-        function checkBudget(totalSpent) {
-            if (budget > 0 && totalSpent > budget) {
-                document.getElementById("budget-warning").style.display = "block";
-                document.getElementById("budget-status").innerText = ` (Budget: ₹${budget})`;
-            } else {
-                document.getElementById("budget-warning").style.display = "none";
-                document.getElementById("budget-status").innerText = ` (Budget: ₹${budget})`;
-            }
-        }
-
-        function renderChart(categoryTotals) {
-            const ctx = document.getElementById("expenseChart").getContext("2d");
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(categoryTotals),
-                    datasets: [{
-                        data: Object.values(categoryTotals),
-                        backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#9966ff']
-                    }]
-                }
-            });
-        }
-
-        function exportData() {
-            let csvContent = "data:text/csv;charset=utf-8," 
-                + "Description,Category,Amount,Date\n"
-                + expenses.map(e => `${e.desc},${e.category},${e.amount},${e.date}`).join("\n");
-            const encodedUri = encodeURI(csvContent);
-      
+renderTable();
+</script>
+<footer>
+Student Budget Buddy Contact us at studentbudgetbuddyhelp@gmail.com
+</body>
+</html>
