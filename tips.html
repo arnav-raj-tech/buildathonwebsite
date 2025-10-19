@@ -1,182 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Essential money management tips for students to budget effectively, track expenses, and build smart financial habits.">
-    <title>Smart Money Tips | Student Budget Buddy</title>
-    
-    <!-- Link to Google Fonts for Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Favicon for branding -->
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #e3f2fd, #f8faff);
-            margin: 0;
-            line-height: 1.6; /* Improved readability */
-            color: #333; /* Better default text color */
-        }
-        
-        header {
-            background: #2196f3;
-            color: white;
-            text-align: center;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-        }
-        
-        nav {
-            background: #1976d2;
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            padding: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 8px 12px; /* Added padding for better touch targets */
-            border-radius: 5px;
-            transition: background-color 0.3s ease; /* Smooth hover effect */
-        }
-        
-        nav a:hover, nav a:focus {
-            text-decoration: underline;
-            background-color: rgba(255, 255, 255, 0.2); /* Subtle background on hover */
-            outline: 2px solid white; /* Focus ring for accessibility */
-        }
-        
-        .container {
-            max-width: 900px;
-            background: white;
-            margin: 30px auto;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 0.5s ease; /* Simple animation for entrance */
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .tip {
-            margin-bottom: 20px;
-            border-left: 5px solid #2196f3;
-            padding-left: 15px;
-            transition: transform 0.3s ease; /* Hover effect */
-        }
-        
-        .tip:hover {
-            transform: translateX(5px); /* Slight lift on hover for interactivity */
-        }
-        
-        .tip h3 {
-            margin: 5px 0;
-            color: #1976d2;
-            font-size: 1.2em; /* Consistent sizing */
-        }
-        
-        img {
-            width: 100%;
-            border-radius: 10px;
-            margin: 10px 0;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-        }
-        
-        /* Responsive iframe wrapper */
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            height: 0;
-            overflow: hidden;
-            border-radius: 10px;
-            margin-top: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 10px;
-            background: #f1f1f1;
-            color: #555;
-            font-size: 0.9em;
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
-        }
-        
-        /* Media query for responsiveness */
-        @media (max-width: 768px) {
-            nav {
-                flex-wrap: wrap; /* Wrap nav items on small screens */
-                justify-content: center;
-            }
-            
-            nav a {
-                font-size: 0.9em; /* Smaller text on mobile */
-            }
-            
-            .container {
-                margin: 20px 10px; /* Adjust margins */
-                padding: 20px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Essential money management tips for students to budget effectively, track expenses, and build smart financial habits.">
+<title>Smart Money Tips | Student Budget Buddy</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+body{
+    font-family:'Poppins',sans-serif;
+    margin:0;
+    background: linear-gradient(135deg, #d2f7d2, #a0e9a0);
+    color:#333;
+}
+header{
+    background:#00a651;
+    color:white;
+    text-align:center;
+    padding:20px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.2);
+}
+nav{
+    background:#007f3f;
+    display:flex;
+    justify-content:center;
+    gap:25px;
+    padding:10px;
+}
+nav a{
+    color:white;
+    text-decoration:none;
+    padding:8px 12px;
+    border-radius:5px;
+    transition:all 0.3s ease;
+}
+nav a:hover{
+    background: rgba(255,255,255,0.2);
+}
+.container{
+    max-width:900px;
+    background:white;
+    margin:30px auto;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.15);
+}
+.tip{
+    margin-bottom:20px;
+    border-left:5px solid #00a651;
+    padding-left:15px;
+    transition: transform 0.3s ease;
+    cursor:pointer;
+}
+.tip:hover{
+    transform: translateX(5px);
+    background:#f0fff0;
+}
+.tip h3{
+    margin:5px 0;
+    color:#007f3f;
+}
+img{
+    width:100%;
+    border-radius:10px;
+    margin:10px 0;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+.video-container{
+    position:relative;
+    padding-bottom:56.25%;
+    height:0;
+    overflow:hidden;
+    border-radius:12px;
+    margin-top:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
+.video-container iframe{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+}
+footer{
+    text-align:center;
+    padding:10px;
+    background:#f1f1f1;
+    color:#555;
+    font-size:0.9em;
+}
+</style>
 </head>
 <body>
-    <header>
-        <h1>Smart Money Tips for Students 💡</h1>
-    </header>
-    
-    <nav aria-label="Main Navigation">
-        <a href="index.html">Home</a>
-        <a href="tracker.html">Expense Tracker</a>
-        <a href="tips.html">Money Tips</a>
-    </nav>
-    
-    <main class="container">
-        <section>
-            <h2>Essential Tips for Managing Your Money</h2> <!-- Added for better hierarchy -->
-            <article class="tip">
-                <h3>💰 1. Record Everything You Spend</h3>
-                <p>Note down every purchase — even the small tea breaks! Awareness is key to saving.</p>
-            </article>
-            
-            <article class="tip">
-                <h3>📊 2. Set a Monthly Limit</h3>
-                <p>Decide how much to spend each month on food, travel, and entertainment. Try not to cross it.</p>
-            </article>
-            
-            <article class="tip">
-                <h3>🎯 3. Save First, Spend Later</h3>
-                <p>Always keep aside at least 10% of your monthly pocket money as savings.</p>
-            </article>
-            
-            <img src="https://img.etimg.com/thumb/msid-109882035,width-900,height-460,resizemode-4.cms" alt="Illustration of effective saving strategies for students" loading="lazy"> <!-- Added loading="lazy" for performance -->
-            
-            <h3>Watch this for more tips 🎥</h3>
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/28FMPE2tH80" title="Money management tips for students" allowfullscreen frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="no-referrer"></iframe>
-            </div>
-        </section>
-    </main>
-    
-    <footer>
-        &copy; 2025 Student Budget Buddy. All rights reserved.
-    </footer>
+<header>
+<h1>Smart Money Tips 💡</h1>
+</header>
+
+<nav>
+<a href="index.html">Home</a>
+<a href="tracker.html">Expense Tracker</a>
+<a href="tips.html">Money Tips</a>
+</nav>
+
+<main class="container">
+<h2>Essential Tips for Managing Your Money</h2>
+
+<article class="tip" onclick="showTipAlert('Record all spending, even small ones! Awareness is the key.')">
+<h3>💰 1. Record Everything You Spend</h3>
+<p>Keep track of all expenses — from coffee to travel. Awareness is the first step to saving.</p>
+</article>
+
+<article class="tip" onclick="showTipAlert('Set limits for different categories like food, transport, and entertainment.')">
+<h3>📊 2. Set a Monthly Limit</h3>
+<p>Decide on a spending limit for each category to avoid overspending.</p>
+</article>
+
+<article class="tip" onclick="showTipAlert('Save at least 10% of your monthly pocket money before spending.')">
+<h3>🎯 3. Save First, Spend Later</h3>
+<p>Set aside savings first — even a small percentage helps you build financial discipline.</p>
+</article>
+
+<img src="https://img.etimg.com/thumb/msid-109882035,width-900,height-460,resizemode-4.cms" alt="Illustration of effective saving strategies for students" loading="lazy">
+
+<h3>Watch this for more tips 🎥</h3>
+<div class="video-container">
+<iframe src="https://www.youtube.com/embed/28FMPE2tH80" title="Money management tips for students" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</main>
+
+<footer>
+2025 Student Budget Buddy.Need Help? Contact us at studentbudgetbuddyhelp@gmail.com
+</footer>
+
+<script>
+function showTipAlert(message){
+    const popup=document.createElement("div");
+    popup.style.position="fixed";
+    popup.style.bottom="20px";
+    popup.style.left="50%";
+    popup.style.transform="translateX(-50%)";
+    popup.style.background="#fff";
+    popup.style.border="2px solid #00a651";
+    popup.style.borderRadius="12px";
+    popup.style.padding="12px 20px";
+    popup.style.boxShadow="0 5px 15px rgba(0,0,0,0.3)";
+    popup.style.fontWeight="500";
+    popup.style.zIndex="9999";
+    popup.innerHTML='<i class="fas fa-lightbulb" style="color:#ffc107;"></i> ' + message;
+    document.body.appendChild(popup);
+    setTimeout(()=>{ popup.remove(); },5000);
+}
+</script>
 </body>
 </html>
