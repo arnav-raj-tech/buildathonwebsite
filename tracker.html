@@ -13,6 +13,81 @@
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDwmJ-6PWeD6x-5rjiWywsFMDlEFSSCsgc",
+    authDomain: "student-budget-tracker-ac367.firebaseapp.com",
+    projectId: "student-budget-tracker-ac367",
+    storageBucket: "student-budget-tracker-ac367.appspot.com",
+    messagingSenderId: "367537585165",
+    appId: "1:367537585165:web:cb945c4d12cad3914ee944"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let expenses = [];
+  let budget = 0;
+  let currentUser = null;
+
+  // Authentication
+  async function login() {
+    const email = prompt("Enter your email:");
+    const password = prompt("Enter your password:");
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      if (err.code === "auth/user-not-found") {
+        const create = confirm("User not found. Create a new account?");
+        if (create) {
+          await createUserWithEmailAndPassword(auth, email, password);
+        }
+      } else {
+        alert(err.message);
+      }
+    }
+  }
+
+  onAuthStateChanged(auth, async user => {
+    if (user) {
+      currentUser = user;
+      document.getElementById("auth-status").innerText = `Logged in as: ${user.email}`;
+      await loadData();
+    } else {
+      currentUser = null;
+      document.getElementById("auth-status").innerText = "Not logged in";
+    }
+  });
+
+  async function loadData() {
+    if (!currentUser) return;
+    const docRef = doc(db, "users", currentUser.uid);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      expenses = data.expenses || [];
+      budget = data.budget || 0;
+      document.getElementById("budget").value = budget;
+      renderTable();
+    } else {
+      await setDoc(docRef, { expenses: [], budget: 0 });
+    }
+  }
+
+  async function saveData() {
+    if (!currentUser) return;
+    await setDoc(doc(db, "users", currentUser.uid), { expenses, budget });
+  }
+
+  window.login = login;
+</script>
+
 <style>
 body {
     font-family: 'Poppins', sans-serif;
@@ -159,9 +234,12 @@ tr:hover{
     z-index:9999;
     animation: slideUp 0.5s ease;
 }
+#auth-status{
+    margin-bottom:15px;
+    font-weight:bold;
+}
 @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
 @keyframes slideUp{from{transform:translateY(20px) translateX(-50%); opacity:0;} to{transform:translateY(0) translateX(-50%); opacity:1;}}
-/* Mobile adjustments */
 @media(max-width:600px){
     header h1{font-size:1.5em;}
     nav a{font-size:0.9em;padding:6px 8px;}
@@ -173,6 +251,8 @@ tr:hover{
 <body>
 <header>
 <h1>Expense Tracker</h1>
+<div id="auth-status">Not logged in</div>
+<button onclick="login()">Login / Create Account</button>
 </header>
 <nav>
 <a href="index.html">Home</a>
@@ -234,14 +314,8 @@ Total Spent: ₹<span id="total">0</span>
 </div>
 </div>
 
-<script>
-let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
-let budget = parseFloat(localStorage.getItem("budget")) || 0;
-
-function saveData(){
-    localStorage.setItem("expenses", JSON.stringify(expenses));
-    localStorage.setItem("budget", budget);
-}
+<script type="module">
+import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
 
 function checkOthers(val){
     const otherInput = document.getElementById("otherCategory");
@@ -249,7 +323,7 @@ function checkOthers(val){
     if(val==="Others") otherInput.focus();
 }
 
-function addExpense(){
+async function addExpense(){
     const desc = document.getElementById("desc").value.trim();
     const amount = parseFloat(document.getElementById("amount").value);
     let category = document.getElementById("category").value;
@@ -258,7 +332,7 @@ function addExpense(){
     const date = document.getElementById("date").value || new Date().toISOString().split('T')[0];
     if(!desc || isNaN(amount) || amount<=0){ alert("Enter valid description and positive amount!"); return;}
     expenses.push({desc, amount, category, date});
-    saveData();
+    await saveData();
     renderTable();
     clearForm();
 }
@@ -272,81 +346,9 @@ function clearForm(){
     document.getElementById("date").value="";
 }
 
-function renderTable(){
-    const tbody = document.querySelector("#expenseTable tbody");
-    tbody.innerHTML="";
-    let total=0;
-    const catTotals={};
-
-    expenses.forEach((item,index)=>{
-        total+=parseFloat(item.amount);
-        catTotals[item.category]= (catTotals[item.category] || 0)+parseFloat(item.amount);
-        tbody.innerHTML+=`<tr>
-        <td>${item.desc}</td>
-        <td>${item.category}</td>
-        <td>₹${item.amount.toFixed(2)}</td>
-        <td>${item.date}</td>
-        <td>
-            <button class="edit-btn" onclick="editExpense(${index})">Edit</button>
-            <button class="delete-btn" onclick="deleteExpense(${index})">Delete</button>
-        </td>
-        </tr>`;
-    });
-
-    document.getElementById("total").innerText=total.toFixed(2);
-    checkBudget(total);
-    renderChart(catTotals);
-    smartTips(total,catTotals);
-}
-
-function deleteExpense(index){ expenses.splice(index,1); saveData(); renderTable(); }
-function editExpense(index){
-    const newDesc = prompt("Edit Description:", expenses[index].desc);
-    const newAmount = prompt("Edit Amount:", expenses[index].amount);
-    const newCategory = prompt("Edit Category:", expenses[index].category);
-    const newDate = prompt("Edit Date (YYYY-MM-DD):", expenses[index].date);
-    if(newDesc && !isNaN(newAmount) && newAmount>0 && newCategory && newDate){
-        expenses[index]={desc:newDesc, amount:parseFloat(newAmount), category:newCategory, date:newDate};
-        saveData(); renderTable();
-    } else alert("Invalid input!");
-}
-
-function sortTable(col){
-    expenses.sort((a,b)=>{
-        if(col===2) return a.amount-b.amount;
-        if(col===3) return new Date(a.date)-new Date(b.date);
-        const keys=["desc","category"]; return a[keys[col]]>b[keys[col]]?1:-1;
-    });
-    renderTable();
-}
-
-function searchExpenses(){
-    const query=document.getElementById("search").value.toLowerCase();
-    const filtered=expenses.filter(exp=>exp.desc.toLowerCase().includes(query) || exp.category.toLowerCase().includes(query));
-    renderFilteredTable(filtered);
-}
-
-function renderFilteredTable(filtered){
-    const tbody = document.querySelector("#expenseTable tbody");
-    tbody.innerHTML="";
-    filtered.forEach(item=>{
-        const index=expenses.indexOf(item);
-        tbody.innerHTML+=`<tr>
-        <td>${item.desc}</td>
-        <td>${item.category}</td>
-        <td>₹${item.amount.toFixed(2)}</td>
-        <td>${item.date}</td>
-        <td>
-            <button class="edit-btn" onclick="editExpense(${index})">Edit</button>
-            <button class="delete-btn" onclick="deleteExpense(${index})">Delete</button>
-        </td>
-        </tr>`;
-    });
-}
-
-function setBudget(){
+async function setBudget(){
     budget=parseFloat(document.getElementById("budget").value);
-    saveData();
+    await saveData();
     checkBudget(parseFloat(document.getElementById("total").innerText));
 }
 
@@ -358,9 +360,9 @@ function checkBudget(total){
         warning.innerText="⚠️ Budget Exceeded! Please cut down! This might affect your finances badly, but you can still continue using the tracker.";
         status.innerText=` (Budget: ₹${budget})`;
     }
-    else{ 
-        warning.style.display="none"; 
-        status.innerText=` (Budget: ₹${budget})`; 
+    else{
+        warning.style.display="none";
+        status.innerText=` (Budget: ₹${budget})`;
     }
 }
 
@@ -398,8 +400,83 @@ function smartTips(total, catTotals){
     });
 }
 
+function renderTable(){
+    const tbody = document.querySelector("#expenseTable tbody");
+    tbody.innerHTML="";
+    let total=0;
+    const catTotals={};
+
+    expenses.forEach((item,index)=>{
+        total+=parseFloat(item.amount);
+        catTotals[item.category]= (catTotals[item.category] || 0)+parseFloat(item.amount);
+        tbody.innerHTML+=`<tr>
+        <td>${item.desc}</td>
+        <td>${item.category}</td>
+        <td>₹${item.amount.toFixed(2)}</td>
+        <td>${item.date}</td>
+        <td>
+            <button class="edit-btn" onclick="editExpense(${index})">Edit</button>
+            <button class="delete-btn" onclick="deleteExpense(${index})">Delete</button>
+        </td>
+        </tr>`;
+    });
+
+    document.getElementById("total").innerText=total.toFixed(2);
+    checkBudget(total);
+    renderChart(catTotals);
+    smartTips(total,catTotals);
+}
+
+async function deleteExpense(index){ expenses.splice(index,1); await saveData(); renderTable(); }
+
+async function editExpense(index){
+    const newDesc = prompt("Edit Description:", expenses[index].desc);
+    const newAmount = prompt("Edit Amount:", expenses[index].amount);
+    const newCategory = prompt("Edit Category:", expenses[index].category);
+    const newDate = prompt("Edit Date (YYYY-MM-DD):", expenses[index].date);
+    if(newDesc && !isNaN(newAmount) && newAmount>0 && newCategory && newDate){
+        expenses[index]={desc:newDesc, amount:parseFloat(newAmount), category:newCategory, date:newDate};
+        await saveData(); renderTable();
+    } else alert("Invalid input!");
+}
+
+function sortTable(col){
+    expenses.sort((a,b)=>{
+        if(col===2) return a.amount-b.amount;
+        if(col===3) return new Date(a.date)-new Date(b.date);
+        const keys=["desc","category"];
+        return a[keys[col]]>b[keys[col]]?1:-1;
+    });
+    renderTable();
+}
+
+function searchExpenses(){
+    const query=document.getElementById("search").value.toLowerCase();
+    const filtered=expenses.filter(exp=>exp.desc.toLowerCase().includes(query) || exp.category.toLowerCase().includes(query));
+    renderFilteredTable(filtered);
+}
+
+function renderFilteredTable(filtered){
+    const tbody = document.querySelector("#expenseTable tbody");
+    tbody.innerHTML="";
+    filtered.forEach(item=>{
+        const index=expenses.indexOf(item);
+        tbody.innerHTML+=`<tr>
+        <td>${item.desc}</td>
+        <td>${item.category}</td>
+        <td>₹${item.amount.toFixed(2)}</td>
+        <td>${item.date}</td>
+        <td>
+            <button class="edit-btn" onclick="editExpense(${index})">Edit</button>
+            <button class="delete-btn" onclick="deleteExpense(${index})">Delete</button>
+        </td>
+        </tr>`;
+    });
+}
+
 renderTable();
 </script>
+
 <footer>
 Student Budget Buddy Contact us at studentbudgetbuddyhelp@gmail.com
 </footer>
