@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | Student Budget Tracker</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4fdf4;
+      color: #003300;
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: #008000;
+      color: white;
+      padding: 1rem 0;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    h2 {
+      color: #008000;
+      border-bottom: 3px solid #008000;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    .team {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      margin-top: 2rem;
+    }
+
+    .member {
+      background-color: #e6f9e6;
+      border: 1px solid #b3e6b3;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 10px;
+      width: 260px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .member:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 128, 0, 0.2);
+    }
+
+    .member h3 {
+      margin-bottom: 5px;
+      color: #004d00;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #008000;
+      color: white;
+      margin-top: 2rem;
+      letter-spacing: 0.5px;
+    }
+
+    .mission {
+      margin-top: 1rem;
+      background-color: #f0fff0;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .member {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>About Team Phoenix</h1>
+  </header>
+
+  <div class="container">
+    <h2>Our Team</h2>
+    <div class="team">
+      <div class="member">
+        <h3>Arnav Raj</h3>
+        <p><strong>Coder</strong><br>Developed and maintained the complete functionality of the website.</p>
+      </div>
+      <div class="member">
+        <h3>Prayag Priydarshi</h3>
+        <p><strong>Ideator</strong><br>Brought in fresh ideas, design edits, and creative page enhancements.</p>
+      </div>
+      <div class="member">
+        <h3>Shresth Shukla</h3>
+        <p><strong>AI Designer</strong><br>Built and trained the Expense AI system and chatbot for smarter user interaction.</p>
+      </div>
+      <div class="member">
+        <h3>Dharmik Dhankani</h3>
+        <p><strong>Ideator & Designer</strong><br>Worked on layout aesthetics, UI flow, and visual balance.</p>
+      </div>
+      <div class="member">
+        <h3>Kevin</h3>
+        <p><strong>Debugger</strong><br>Tracked bugs, optimized performance, and ensured error-free operation.</p>
+      </div>
+    </div>
+
+    <div class="mission">
+      <h2>Our Mission</h2>
+      <p>
+        Many students struggle to manage their daily and monthly expenses effectively. Between academic demands and social life, 
+        it’s easy to lose track of where the money goes. 
+      </p>
+      <p>
+        Team Phoenix created <strong>Student Budget Tracker</strong> to help solve this. 
+        It’s an intuitive, AI-driven financial companion designed especially for students — tracking expenses, offering real-time suggestions, 
+        and helping users stay within their budget without stress.
+      </p>
+      <p>
+        Our vision is to make financial literacy accessible, simple, and smart for the next generation — 
+        empowering every student to rise, like a Phoenix, stronger and wiser with every spending choice.
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    2025 Team Phoenix | Student Budget Tracker 💚
+  </footer>
+
+</body>
+</html>
