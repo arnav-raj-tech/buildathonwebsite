@@ -262,49 +262,48 @@ footer {
 </footer>
 
 <script>
-function askAI() {
-    const input = document.getElementById("aiInput").value.toLowerCase();
-    let response = "Sorry, I don't have a suggestion for that. Try asking about your budget, spending or saving.";
+function localBotReply(text){
+    const t = text.toLowerCase();
+    const numMatch = text.match(/(\d+(\.\d+)?)/);
 
-    // Keywords
-    const budgetKeywords = ["budget", "money limit", "spending limit"];
-    const savingKeywords = ["save", "saving"];
-    const foodKeywords = ["food", "meal", "eat"];
-    const transportKeywords = ["transport", "bus", "metro", "travel"];
-    const splitKeywords = ["50/30/20", "50 30 20", "calculate", "split"];
-
-    // Basic advice
-    if (budgetKeywords.some(k => input.includes(k))) {
-        response = "💡 Keep track of your monthly budget and try not to overspend. Set aside some savings first!";
-    } else if (savingKeywords.some(k => input.includes(k))) {
-        response = "💰 Saving small amounts consistently can make a big difference. Try 10% of your pocket money!";
-    } else if (foodKeywords.some(k => input.includes(k))) {
-        response = "🍔 Try cooking at home or choosing cheaper meals to save money on food!";
-    } else if (transportKeywords.some(k => input.includes(k))) {
-        response = "🚍 Use public transport or walk when possible to save on travel costs.";
-    } 
-
-    // 50/30/20 rule calculation
-    if (splitKeywords.some(k => input.includes(k))) {
-        // Extract numbers from the input
-        const numbers = input.match(/\d+(\.\d+)?/g);
-        if(numbers && numbers.length > 0){
-            const amount = parseFloat(numbers[0]);
-            const needs = (amount * 50 / 100).toFixed(2);
-            const wants = (amount * 30 / 100).toFixed(2);
-            const savings = (amount * 20 / 100).toFixed(2);
-            response = `📊 According to the 50/30/20 rule for ₹${amount}:
-- Needs (50%): ₹${needs}
-- Wants (30%): ₹${wants}
-- Savings (20%): ₹${savings}`;
-        } else {
-            response = "Please provide an amount to calculate, e.g., 'calculate 50 30 20 of 2000'";
-        }
+    // 50/30/20 calculation
+    if((t.includes("calculate") || t.includes("50/30/20") || t.includes("50 30 20")) && numMatch){
+        const amt = parseFloat(numMatch[1]);
+        const needs = (amt * 0.5).toFixed(2);
+        const wants = (amt * 0.3).toFixed(2);
+        const save = (amt * 0.2).toFixed(2);
+        return `📊 According to 50/30/20 for ₹${amt}:\n- Needs (50%): ₹${needs}\n- Wants (30%): ₹${wants}\n- Savings (20%): ₹${save}`;
     }
 
-    document.getElementById("aiResponse").innerText = response;
+    // Previous advice messages
+    if(t.includes('hello')||t.includes('hi')) 
+        return "Hi! I'm Expense AI. Tell me your monthly pocket money or ask for saving tips.";
+    if(t.includes('save')||t.includes('saving')) 
+        return "Use 50/30/20: 50% needs, 30% wants, 20% savings. Want me to calculate based on your amount?";
+    if(t.includes('tips')||t.includes('advice')) 
+        return "Track daily snacks, set weekly limits, avoid impulse buys. Ask me to suggest budget!";
+    if(t.includes('budget')||t.includes('how much')) {
+        if(numMatch){
+            const amt = parseFloat(numMatch[1]);
+            const needs = (amt*0.5).toFixed(2);
+            const wants = (amt*0.3).toFixed(2);
+            const save = (amt*0.2).toFixed(2);
+            return `From ₹${amt}: Needs ≈ ₹${needs}, Wants ≈ ₹${wants}, Savings ≈ ₹${save}`;
+        } else return "Please tell me your monthly amount like '₹2000' or '2000'.";
+    }
+    if(t.includes('bye')||t.includes('thanks')) 
+        return "You're welcome! Come back anytime 😊";
+
+    // Fallback messages
+    const fallback = [
+        "I can help with budget calculations and saving tips. Try 'calculate 1500' or 'saving tips'.",
+        "Ask: 'How should I split ₹2000?' or 'Give me student saving tips.'"
+    ];
+    return fallback[Math.floor(Math.random()*fallback.length)];
 }
+
 </script>
 
 </body>
 </html>
+
