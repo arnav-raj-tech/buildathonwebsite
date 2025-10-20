@@ -176,6 +176,37 @@ nav ul li a:hover {
     padding-left: 10px;
   }
 }
+
+    /* Make nav links look like buttons */
+nav a {
+    background-color: #008000; /* green button color */
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px; /* button padding */
+    border-radius: 10px; /* rounded edges */
+    font-weight: 500;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2); /* subtle shadow for 3D look */
+    transition: all 0.2s ease-in-out;
+}
+
+nav a:hover {
+    background-color: #00a000; /* slightly brighter green on hover */
+    transform: translateY(-2px); /* lift effect */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Responsive adjustment for small screens */
+@media (max-width: 600px) {
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    nav a {
+        padding: 8px 15px;
+        margin-bottom: 5px;
+    }
+}
   </style>
 </head>
 
