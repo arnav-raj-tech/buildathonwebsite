@@ -14,142 +14,160 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-    body {
-        font-family: 'Poppins', sans-serif;
-        margin:0;
-        background: linear-gradient(135deg, #d2f7d2, #a0e9a0);
-        color: #333;
-        transition: all 0.3s ease;
-    }
-    header{
-        background: #00a651;
-        color: white;
-        text-align:center;
-        padding:20px 10px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-    }
-    nav{
-        background: #007f3f;
-        display:flex;
-        justify-content:center;
-        gap:25px;
-        padding:10px;
-    }
-    nav a{
-        color:white;
-        text-decoration:none;
-        padding:8px 12px;
-        border-radius:5px;
-        transition: all 0.3s ease;
-    }
-    nav a:hover{
-        background: rgba(255,255,255,0.2);
-    }
-    .container{
-        max-width:900px;
-        margin:30px auto;
-        background:white;
-        padding:25px;
-        border-radius:12px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-        animation: fadeIn 0.5s ease;
-    }
-    input, select, button{
-        padding:10px;
-        border-radius:6px;
-        border:1px solid #ccc;
-        margin-right:10px;
-        margin-top:10px;
-        transition: all 0.3s ease;
-    }
-    button{
-        background:#00a651;
-        color:white;
-        border:none;
-        cursor:pointer;
-    }
-    button:hover{
-        background:#007f3f;
-    }
-    table{
-        width:100%;
-        border-collapse: collapse;
-        margin-top:20px;
-    }
-    th, td{
-        padding:10px;
-        border-bottom:1px solid #ddd;
-        text-align:center;
-    }
-    th{
-        background:#c4f0c4;
-        cursor:pointer;
-    }
-    tr:hover{
-        background:#e5ffe5;
-    }
-    .delete-btn, .edit-btn{
-        padding:6px 10px;
-        border:none;
-        border-radius:5px;
-        cursor:pointer;
-        color:white;
-    }
-    .edit-btn{
-        background:#4caf50;
-    }
-    .edit-btn:hover{background:#388e3c;}
-    .delete-btn{
-        background:#f44336;
-    }
-    .delete-btn:hover{background:#c62828;}
-    .summary{
-        margin-top:15px;
-        font-weight:bold;
-        text-align:right;
-    }
-    .budget-warning{
-        color:red;
-        font-size:1.1em;
-        margin-top:10px;
-        display:none;
-    }
-    .video-container{
-        position:relative;
-        padding-bottom:56.25%;
-        height:0;
-        overflow:hidden;
-        border-radius:12px;
-        margin:20px auto;
-        max-width:800px;
-        box-shadow:0 4px 12px rgba(0,0,0,0.2);
-    }
-    .video-container iframe{
-        position:absolute;
-        top:0;
-        left:0;
-        width:100%;
-        height:100%;
-        border:0;
-    }
-    .tip-popup{
-        position:fixed;
-        bottom:20px;
-        left:50%;
-        transform:translateX(-50%);
-        background:#fff;
-        border-radius:12px;
-        padding:12px 20px;
-        box-shadow:0 5px 15px rgba(0,0,0,0.3);
-        display:flex;
-        align-items:center;
-        gap:10px;
-        font-weight:500;
-        z-index:9999;
-        animation: slideUp 0.5s ease;
-    }
-    @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
-    @keyframes slideUp{from{transform:translateY(20px) translateX(-50%); opacity:0;} to{transform:translateY(0) translateX(-50%); opacity:1;}}
+body {
+    font-family: 'Poppins', sans-serif;
+    margin:0;
+    background: linear-gradient(135deg, #d2f7d2, #a0e9a0);
+    color: #333;
+    transition: all 0.3s ease;
+}
+header{
+    background: #00a651;
+    color: white;
+    text-align:center;
+    padding:20px 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+nav{
+    background: #007f3f;
+    display:flex;
+    flex-wrap: wrap;
+    justify-content:center;
+    gap:15px;
+    padding:10px;
+}
+nav a{
+    color:white;
+    text-decoration:none;
+    padding:8px 12px;
+    border-radius:5px;
+    transition: all 0.3s ease;
+    text-align:center;
+}
+nav a:hover{
+    background: rgba(255,255,255,0.2);
+}
+.container{
+    max-width:900px;
+    margin:20px auto;
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    animation: fadeIn 0.5s ease;
+}
+input, select, button{
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #ccc;
+    margin-top:10px;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 250px;
+    display:block;
+}
+button{
+    background:#00a651;
+    color:white;
+    border:none;
+    cursor:pointer;
+    margin-top:10px;
+}
+button:hover{
+    background:#007f3f;
+}
+table{
+    width:100%;
+    border-collapse: collapse;
+    margin-top:20px;
+    overflow-x:auto;
+    display:block;
+}
+th, td{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+    text-align:center;
+}
+th{
+    background:#c4f0c4;
+    cursor:pointer;
+}
+tr:hover{
+    background:#e5ffe5;
+}
+.delete-btn, .edit-btn{
+    padding:6px 10px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    color:white;
+}
+.edit-btn{
+    background:#4caf50;
+}
+.edit-btn:hover{background:#388e3c;}
+.delete-btn{
+    background:#f44336;
+}
+.delete-btn:hover{background:#c62828;}
+.summary{
+    margin-top:15px;
+    font-weight:bold;
+    text-align:right;
+}
+.budget-warning{
+    color:red;
+    font-size:1.1em;
+    margin-top:10px;
+    display:none;
+}
+.chart-container{
+    margin-top:20px;
+    max-width: 100%;
+}
+.video-container{
+    position:relative;
+    padding-bottom:56.25%;
+    height:0;
+    overflow:hidden;
+    border-radius:12px;
+    margin:20px auto;
+    max-width:800px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
+.video-container iframe{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    border:0;
+}
+.tip-popup{
+    position:fixed;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#fff;
+    border-radius:12px;
+    padding:12px 20px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:500;
+    z-index:9999;
+    animation: slideUp 0.5s ease;
+}
+@keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
+@keyframes slideUp{from{transform:translateY(20px) translateX(-50%); opacity:0;} to{transform:translateY(0) translateX(-50%); opacity:1;}}
+/* Mobile adjustments */
+@media(max-width:600px){
+    header h1{font-size:1.5em;}
+    nav a{font-size:0.9em;padding:6px 8px;}
+    .container{padding:15px;margin:15px;}
+    table, th, td{font-size:0.85em;}
+}
 </style>
 </head>
 <body>
@@ -200,7 +218,7 @@
 Total Spent: ₹<span id="total">0</span>
 <span id="budget-status"></span>
 </div>
-<div class="budget-warning" id="budget-warning">Warning: You've exceeded your budget!</div>
+<div class="budget-warning" id="budget-warning"></div>
 
 <h3>Budget Settings</h3>
 <input type="number" id="budget" placeholder="Set Monthly Budget ₹">
@@ -335,8 +353,15 @@ function setBudget(){
 function checkBudget(total){
     const warning = document.getElementById("budget-warning");
     const status = document.getElementById("budget-status");
-    if(budget>0 && total>budget){ warning.style.display="block"; status.innerText=` (Budget: ₹${budget})`; }
-    else{ warning.style.display="none"; status.innerText=` (Budget: ₹${budget})`; }
+    if(budget>0 && total>budget){
+        warning.style.display="block";
+        warning.innerText="⚠️ Budget Exceeded! Please cut down! This might affect your finances badly, but you can still continue using the tracker.";
+        status.innerText=` (Budget: ₹${budget})`;
+    }
+    else{ 
+        warning.style.display="none"; 
+        status.innerText=` (Budget: ₹${budget})`; 
+    }
 }
 
 let chartInstance=null;
@@ -364,11 +389,8 @@ function showTip(message){
 }
 
 function smartTips(total, catTotals){
-    // Food over 40%
     if((catTotals['Food']||0)/total*100>40) showTip("🍔 Food is taking over your budget! Consider cheaper meals.");
-    // Close to budget
     if(budget>0 && total>budget*0.9) showTip("⚠️ You're close to your monthly budget! Track carefully.");
-    // Dynamic Others
     Object.keys(catTotals).forEach(cat=>{
         if(!['Food','Transport','Books','Leisure'].includes(cat)){
             if(catTotals[cat]/total*100>30) showTip(`💡 ${cat} is taking over your budget! Consider saving money.`);
@@ -380,8 +402,6 @@ renderTable();
 </script>
 <footer>
 Student Budget Buddy Contact us at studentbudgetbuddyhelp@gmail.com
+</footer>
 </body>
 </html>
-
-
-
