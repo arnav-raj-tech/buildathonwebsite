@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About Us | Student Budget Tracker</title>
+  <title>About Us | Student Budget Buddy</title>
   <style>
+    /* General Styles */
     body {
       font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f4fdf4;
+      background: linear-gradient(135deg, #d2e9f7, #f8faff);
       color: #003300;
       line-height: 1.6;
     }
@@ -17,7 +18,7 @@
     header {
       background-color: #008000;
       color: white;
-      padding: 1rem 0;
+      padding: 1.5rem 0;
       text-align: center;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
@@ -28,13 +29,146 @@
       letter-spacing: 1px;
     }
 
+    /* Navigation as buttons */
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 12px 0;
+      flex-wrap: wrap;
+      background-color: #1976d2;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    nav a {
+      background-color: #008000; /* main green */
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 500;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    nav a:hover {
+      background-color: #00a000; /* hover green */
+      transform: translateY(-2px);
+      box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+    }
+
+    /* Responsive nav */
+    @media (max-width: 600px) {
+      nav a {
+        padding: 8px 15px;
+        margin-bottom: 6px;
+      }
+    }
+
+    /* Container */
     .container {
-      max-width: 1000px;
+      max-width: 900px;
       margin: 2rem auto;
-      padding: 20px;
+      padding: 25px;
       background: white;
       border-radius: 12px;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #006400;
+    }
+
+    .team-member {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-left: 5px solid #008000;
+      transition: transform 0.3s ease;
+    }
+
+    .team-member:hover {
+      transform: translateX(5px);
+    }
+
+    .team-member h3 {
+      margin: 5px 0;
+      color: #008000;
+      font-size: 1.2em;
+    }
+
+    p {
+      margin: 5px 0;
+    }
+
+    .about-text {
+      margin-top: 20px;
+      font-size: 1em;
+      text-align: justify;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #f1f1f1;
+      color: #555;
+      font-size: 0.9em;
+      margin-top: 30px;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>About Us</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="tracker.html">Expense Tracker</a>
+    <a href="tips.html">Money Tips</a>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSe0FppmFElsTpw5sPLd8CNJCxoPkCAnOKgH46ebzdR1NTwIgg/viewform" target="_blank">Feedback</a>
+  </nav>
+
+  <div class="container">
+    <h2>Meet Team Phoenix</h2>
+
+    <div class="team-member">
+      <h3>Arnav Raj - Coder</h3>
+      <p>Helped with the coding of the website and implementing advanced tracking features.</p>
+    </div>
+
+    <div class="team-member">
+      <h3>Prayag Priydarshi - Ideator</h3>
+      <p>Provided ideas for page content, editing, and enhancing user experience.</p>
+    </div>
+
+    <div class="team-member">
+      <h3>Shresth Shukla - AI Designer</h3>
+      <p>Programmed the Expense AI module to provide smart tips and budget calculations.</p>
+    </div>
+
+    <div class="team-member">
+      <h3>Dharmik Dhankani - Ideator & Designer</h3>
+      <p>Assisted with designs, layouts, and overall visual aesthetics of the website.</p>
+    </div>
+
+    <div class="team-member">
+      <h3>Kevin Solanki - Debugger</h3>
+      <p>Helped identify and fix glitches and improve website functionality.</p>
+    </div>
+
+    <div class="about-text">
+      <p>We noticed that students often face challenges managing their finances effectively, leading to overspending or missed savings opportunities. With Team Phoenix, we created the Student Budget Buddy — a platform to track expenses, provide AI-powered tips, and help students build smart financial habits for school, college, and beyond.</p>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Student Budget Buddy. All rights reserved.
+  </footer>
+</body>
+</html>      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
       animation: fadeIn 1.2s ease-in-out;
     }
 
