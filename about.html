@@ -29,12 +29,649 @@
       letter-spacing: 1px;
     }
 
+    /* NAVBAR */
     nav {
       background-color: #197f3f;
       display: flex;
       justify-content: center;
+      flex-wrap: wrap;
       gap: 15px;
       padding: 10px;
+    }
+
+    nav button {
+      background-color: #00b300;
+      border: none;
+      padding: 10px 18px;
+      color: white;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    nav button:hover {
+      background-color: #007f00;
+    }
+
+    /* Container */
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 25px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #008000;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    /* Team Members */
+    .team {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      margin-top: 2rem;
+    }
+
+    .member {
+      background-color: #e6f9e6;
+      border: 1px solid #b3e6b3;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 10px;
+      width: 260px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .member:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 128, 0, 0.2);
+    }
+
+    .member h3 {
+      margin-bottom: 5px;
+      color: #004d00;
+    }
+
+    .member p {
+      margin: 0;
+    }
+
+    /* Mission Section */
+    .mission {
+      margin-top: 2rem;
+      background-color: #f0fff0;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #008000;
+      color: white;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+      letter-spacing: 0.5px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .team {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .member {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>About Us</h1>
+  </header>
+
+  <nav>
+    <button onclick="location.href='index.html'">Home</button>
+    <button onclick="location.href='tracker.html'">Expense Tracker</button>
+    <button onclick="location.href='tips.html'">Money Tips</button>
+    <button onclick="location.href='https://docs.google.com/forms/d/e/1FAIpQLSe0FppmFElsTpw5sPLd8CNJCxoPkCAnOKgH46ebzdR1NTwIgg/viewform'">Feedback</button>
+  </nav>
+
+  <div class="container">
+    <h2>Meet Team Phoenix</h2>
+    <div class="team">
+      <div class="member">
+        <h3>Arnav Raj - Coder</h3>
+        <p>Helped with the coding of the website and implemented core features.</p>
+      </div>
+      <div class="member">
+        <h3>Prayag Priydarshi - Ideator</h3>
+        <p>Provided ideas, helped with editing pages, and suggested new features.</p>
+      </div>
+      <div class="member">
+        <h3>Shresth Shukla - AI Designer</h3>
+        <p>Programmed the Expense AI for smarter insights and analytics.</p>
+      </div>
+      <div class="member">
+        <h3>Dharmik Dhankani - Ideator & Designer</h3>
+        <p>Helped with layouts, design, and UI improvements for better user experience.</p>
+      </div>
+      <div class="member">
+        <h3>Kevin Solanki - Debugger</h3>
+        <p>Assisted in finding and fixing bugs, ensuring smooth performance across devices.</p>
+      </div>
+    </div>
+
+    <div class="mission">
+      <h2>Our Mission</h2>
+      <p>We noticed that students often face challenges managing their finances effectively, leading to overspending or missed savings opportunities. With Team Phoenix, we created the Student Budget Buddy — a platform to track expenses, provide AI-powered tips, and help students build smart financial habits for school, college, and beyond.</p>
+      <p>Our goal is to make money management simple, intuitive, and accessible for everyone.</p>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Student Budget Buddy | Team Phoenix 💚
+  </footer>
+
+</body>
+</html>    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 25px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #008000;
+      text-align: center;
+    }
+
+    .team-member {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-left: 5px solid #00b300;
+      background-color: #f0fff0;
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+
+    .team-member:hover {
+      transform: translateX(5px);
+    }
+
+    .team-member h3 {
+      margin: 0 0 5px;
+      font-size: 1.2rem;
+      color: #005500;
+    }
+
+    .team-member p {
+      margin: 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #e0ffe0;
+      color: #003300;
+      font-size: 0.9rem;
+      margin-top: 20px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>About Us</h1>
+  </header>
+
+  <nav>
+    <button onclick="location.href='index.html'">Home</button>
+    <button onclick="location.href='tracker.html'">Expense Tracker</button>
+    <button onclick="location.href='tips.html'">Money Tips</button>
+    <button onclick="location.href='https://docs.google.com/forms/d/e/1FAIpQLSe0FppmFElsTpw5sPLd8CNJCxoPkCAnOKgH46ebzdR1NTwIgg/viewform'">Feedback</button>
+  </nav>
+
+  <div class="container">
+    <h2>Meet Team Phoenix</h2>
+
+    <div class="team-member">
+      <h3>Arnav Raj - Coder</h3>
+      <p>Helped with the coding of the website and implemented core features.</p>
+    </div>
+
+    <div class="team-member">
+      <h3>Prayag Priydarshi - Ideator</h3>
+      <p>Provided ideas, helped with editing pages, and suggested new features.</p>
+    </div>
+
+    <div class="team-member">
+      <h3>Shresth Shukla - AI Designer</h3>
+      <p>Programmed the Expense AI for smarter insights and analytics.</p>
+    </div>
+
+    <div class="team-member">
+      <h3>Dharmik Dhankani - Ideator & Designer</h3>
+      <p>Helped with layouts, design, and UI improvements for better user experience.</p>
+    </div>
+
+    <div class="team-member">
+      <h3>Kevin Solanki - Debugger</h3>
+      <p>Assisted in finding and fixing bugs, ensuring smooth performance across devices.</p>
+    </div>
+
+    <p>We noticed that students often face challenges with managing their finances. Team Phoenix came together to build this platform to help students track expenses, set budgets, and develop smart financial habits that work on both desktop and mobile devices. Our goal is to make money management simple, intuitive, and accessible for everyone.</p>
+  </div>
+
+  <footer>
+    &copy; 2025 Student Budget Tracker. All rights reserved.
+  </footer>
+</body>
+</html>      padding: 12px 0;
+      flex-wrap: wrap;
+      background-color: #1976d2;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    nav a {
+      background-color: #008000; /* main green */
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 500;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    nav a:hover {
+      background-color: #00a000; /* hover green */
+      transform: translateY(-2px);
+      box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+    }
+
+    /* Responsive nav */
+    @media (max-width: 600px) {
+      nav a {
+        padding: 8px 15px;
+        margin-bottom: 6px;
+      }
+    }
+
+    /* Container */
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 25px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #006400;
+    }
+
+    .team-member {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-left: 5px solid #008000;
+      transition: transform 0.3s ease;
+    }
+
+    .team-member:hover {
+      transform: translateX(5px);
+    }
+
+    .team-member h3 {
+      margin: 5px 0;
+      color: #008000;
+      font-size: 1.2em;
+    }
+
+    p {
+      margin: 5px 0;
+    }
+
+    .about-text {
+      margin-top: 20px;
+      font-size: 1em;
+      text-align: justify;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #f1f1f1;
+      color: #555;
+      font-size: 0.9em;
+      margin-top: 30px;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>About Us</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="tracker.html">Expense Tracker</a>
+    <a href="tips.html">Money Tips</a>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSe0FppmFElsTpw5sPLd8CNJCxoPkCAnOKgH46ebzdR1NTwIgg/viewform" target="_blank">Feedback</a>
+  </nav>
+
+  <div class="container">
+    <h2>Meet Team Phoenix</h2>
+
+    <div class="team-member">
+      <h3>Arnav Raj - Coder</h3>
+      <p>Helped with the coding of the website and implementing advanced tracking features.</p>
+    </div>
+
+    <div class="team-member">
+      <h3>Prayag Priydarshi - Ideator</h3>
+      <p>Provided ideas for page content, editing, and enhancing user experience.</p>
+    </div>
+
+    <div class="team-member">
+      <h3>Shresth Shukla - AI Designer</h3>
+      <p>Programmed the Expense AI module to provide smart tips and budget calculations.</p>
+    </div>
+
+    <div class="team-member">
+      <h3>Dharmik Dhankani - Ideator & Designer</h3>
+      <p>Assisted with designs, layouts, and overall visual aesthetics of the website.</p>
+    </div>
+
+    <div class="team-member">
+      <h3>Kevin Solanki - Debugger</h3>
+      <p>Helped identify and fix glitches and improve website functionality.</p>
+    </div>
+
+    <div class="about-text">
+      <p>We noticed that students often face challenges managing their finances effectively, leading to overspending or missed savings opportunities. With Team Phoenix, we created the Student Budget Buddy — a platform to track expenses, provide AI-powered tips, and help students build smart financial habits for school, college, and beyond.</p>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Student Budget Buddy. All rights reserved.
+  </footer>
+</body>
+</html>      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    h2 {
+      color: #008000;
+      border-bottom: 3px solid #008000;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    .team {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      margin-top: 2rem;
+    }
+
+    .member {
+      background-color: #e6f9e6;
+      border: 1px solid #b3e6b3;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 10px;
+      width: 260px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .member:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 128, 0, 0.2);
+    }
+
+    .member h3 {
+      margin-bottom: 5px;
+      color: #004d00;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #008000;
+      color: white;
+      margin-top: 2rem;
+      letter-spacing: 0.5px;
+    }
+
+    .mission {
+      margin-top: 1rem;
+      background-color: #f0fff0;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .member {
+        width: 90%;
+      }
+    }
+    /* === NAVBAR STYLING === */
+nav {
+  background-color: #008000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 25px;
+  flex-wrap: wrap;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Left side title/logo */
+nav .logo {
+  font-size: 1.6em;
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Right side links */
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li {
+  display: inline-block;
+}
+
+/* Make nav links look like green buttons */
+nav ul li a {
+  background-color: #008000;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 18px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+nav ul li a:hover {
+  background-color: #00a000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile-friendly wrapping */
+@media (max-width: 700px) {
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  nav ul {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  nav ul li a {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding-left: 10px;
+  }
+}
+
+    /* Make nav links look like buttons */
+nav a {
+    background-color: #008000; /* green button color */
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px; /* button padding */
+    border-radius: 10px; /* rounded edges */
+    font-weight: 500;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2); /* subtle shadow for 3D look */
+    transition: all 0.2s ease-in-out;
+}
+
+nav a:hover {
+    background-color: #00a000; /* slightly brighter green on hover */
+    transform: translateY(-2px); /* lift effect */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Responsive adjustment for small screens */
+@media (max-width: 600px) {
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    nav a {
+        padding: 8px 15px;
+        margin-bottom: 5px;
+    }
+}
+  </style>
+</head>
+
+  <header class="site-header" role="banner">
+  <div class="brand" aria-hidden="false">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" fill="#fff" opacity="0.06"/>
+      <path d="M6 12c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M6 15a6 6 0 0 0 12 0" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div>
+      <h1>Student Budget Buddy</h1>
+      <div style="font-size:0.82rem; opacity:.95">by Team Phoenix</div>
+    </div>
+  </div>
+
+  <nav class="main-nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html">Home</a>
+    <a href="tracker.html">Expense Tracker</a>
+    <a href="tips.html">Money Tips</a>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSe0FppmFElsTpw5sPLd8CNJCxoPkCAnOKgH46ebzdR1NTwIgg/viewform" target="_blank" rel="noopener noreferrer">Feedback</a>
+    <a href="about.html" class="active" aria-current="page">About</a>
+  </nav>
+</header>
+  
+  <div class="container">
+    <h2>Our Team</h2>
+    <div class="team">
+      <div class="member">
+        <h3>Arnav Raj</h3>
+        <p><strong>Coder</strong><br>Developed and maintained the complete functionality of the website.</p>
+      </div>
+      <div class="member">
+        <h3>Prayag Priydarshi</h3>
+        <p><strong>Ideator</strong><br>Brought in fresh ideas, design edits, and creative page enhancements.</p>
+      </div>
+      <div class="member">
+        <h3>Shresth Shukla</h3>
+        <p><strong>AI Designer</strong><br>Built and trained the Expense AI system and chatbot for smarter user interaction.</p>
+      </div>
+      <div class="member">
+        <h3>Dharmik Dhankani</h3>
+        <p><strong>Ideator & Designer</strong><br>Worked on layout aesthetics, UI flow, and visual balance.</p>
+      </div>
+      <div class="member">
+        <h3>Kevin Solanki</h3>
+        <p><strong>Debugger</strong><br>Tracked bugs, optimized performance, and ensured error-free operation.</p>
+      </div>
+    </div>
+
+    <div class="mission">
+      <h2>Our Mission</h2>
+      <p>
+        Many students struggle to manage their daily and monthly expenses effectively. Between academic demands and social life, 
+        it’s easy to lose track of where the money goes. 
+      </p>
+      <p>
+        Team Phoenix created <strong>Student Budget Tracker</strong> to help solve this. 
+        It’s an intuitive, AI-driven financial companion designed especially for students — tracking expenses, offering real-time suggestions, 
+        and helping users stay within their budget without stress.
+      </p>
+      <p>
+        Our vision is to make financial literacy accessible, simple, and smart for the next generation — 
+        empowering every student to rise, like a Phoenix, stronger and wiser with every spending choice.
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    2025 Team Phoenix | Student Budget Tracker 💚
+  </footer>
+
+</body>
+</html>      padding: 10px;
       flex-wrap: wrap;
     }
 
