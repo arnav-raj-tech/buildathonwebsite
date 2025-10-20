@@ -29,8 +29,9 @@ header{
 nav{
     background:#007f3f;
     display:flex;
+    flex-wrap: wrap;
     justify-content:center;
-    gap:25px;
+    gap:15px;
     padding:10px;
 }
 nav a{
@@ -39,6 +40,8 @@ nav a{
     padding:8px 12px;
     border-radius:5px;
     transition:all 0.3s ease;
+    text-align:center;
+    font-size:0.95em;
 }
 nav a:hover{
     background: rgba(255,255,255,0.2);
@@ -46,8 +49,8 @@ nav a:hover{
 .container{
     max-width:900px;
     background:white;
-    margin:30px auto;
-    padding:25px;
+    margin:20px auto;
+    padding:20px;
     border-radius:12px;
     box-shadow:0 5px 15px rgba(0,0,0,0.15);
 }
@@ -65,6 +68,7 @@ nav a:hover{
 .tip h3{
     margin:5px 0;
     color:#007f3f;
+    font-size:1em;
 }
 img{
     width:100%;
@@ -94,6 +98,15 @@ footer{
     background:#f1f1f1;
     color:#555;
     font-size:0.9em;
+}
+
+/* Mobile adjustments */
+@media(max-width:600px){
+    header h1{font-size:1.5em;}
+    nav{gap:10px;}
+    nav a{font-size:0.9em;padding:6px 8px;}
+    .container{padding:15px;margin:15px;}
+    .tip h3{font-size:0.95em;}
 }
 </style>
 </head>
@@ -137,7 +150,7 @@ footer{
 </main>
 
 <footer>
-2025 Student Budget Buddy.Need Help? Contact us at studentbudgetbuddyhelp@gmail.com
+2025 Student Budget Buddy. Need Help? Contact us at studentbudgetbuddyhelp@gmail.com
 </footer>
 
 <script>
@@ -154,6 +167,8 @@ function showTipAlert(message){
     popup.style.boxShadow="0 5px 15px rgba(0,0,0,0.3)";
     popup.style.fontWeight="500";
     popup.style.zIndex="9999";
+    popup.style.maxWidth="90%";
+    popup.style.textAlign="center";
     popup.innerHTML='<i class="fas fa-lightbulb" style="color:#ffc107;"></i> ' + message;
     document.body.appendChild(popup);
     setTimeout(()=>{ popup.remove(); },5000);
@@ -161,5 +176,3 @@ function showTipAlert(message){
 </script>
 </body>
 </html>
-
-
