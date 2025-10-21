@@ -230,14 +230,12 @@ footer {
     <button class="btn" onclick="location.href='tips.html'">View Money Tips</button>
   </div>
 
-  <!-- Expense AI Widget -->
-  <div id="aiWidget">
-    <h3>Expense AI 🤖</h3>
-    <p>Ask me about your expenses or get tips!</p>
-    <input type="text" id="aiInput" placeholder="Type your question...">
-    <button onclick="askAI()">Ask</button>
-    <p id="aiResponse" style="margin-top:10px;"></p>
-  </div>
+  
+<div id="ai-chat-container" style="max-width:400px;margin:20px auto;padding:10px;background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.2);">
+  <div id="ai-chat-log" style="height:200px;overflow-y:auto;padding:10px;border:1px solid #ccc;border-radius:8px;margin-bottom:10px;background:#f9f9f9;"></div>
+  <input type="text" id="ai-chat-input" placeholder="Ask Expense AI..." style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;">
+  <button onclick="askExpenseAI()" style="margin-top:10px;width:100%;padding:10px;background:#00a651;color:white;border:none;border-radius:8px;cursor:pointer;">Send</button>
+</div>
 
   <!-- Video -->
   <h3>Watch this for more tips 🎥</h3>
@@ -257,59 +255,81 @@ footer {
   </div>
 </div>
 
-
-<!-- Expense AI Script -->
 <script>
-  const aiResponses = {
-    "food": [
-      "🍔 Try meal prepping — it can save both time and money!",
-      "🥗 Consider switching one meal a day to home-cooked food.",
-      "☕ Avoid frequent takeaways or coffees; they add up quickly."
-    ],
-    "transport": [
-      "🚌 Use student transport passes or metro cards for discounts.",
-      "🚴 Walking or cycling saves both money and the planet.",
-      "🚗 Try carpooling with friends to cut your transport costs."
-    ],
-    "books": [
-      "📚 Check your library before buying new books.",
-      "💡 Try second-hand or digital versions to save big.",
-      "🎓 Rent textbooks if you only need them for a semester."
-    ],
-    "leisure": [
-      "🎬 Limit movie nights or streaming subscriptions.",
-      "🎮 Try free or low-cost entertainment alternatives.",
-      "🧩 Plan leisure spending so it doesn’t eat into essentials."
-    ],
-    "others": [
-      "💭 Review these miscellaneous expenses — are they necessary?",
-      "💸 Track these purchases carefully to spot patterns.",
-      "📊 Even small untracked items can add up fast — note everything."
-    ],
-    "budgeting": [
-      "💰 Follow the 50/30/20 rule — 50% for needs, 30% for wants, 20% for savings!",
-      "📈 Divide your allowance: 50% essentials, 30% fun, 20% savings — simple and smart!",
-      "🧾 The 50-30-20 plan helps you stay balanced — try automating the 20% savings part.",
-      "💸 Want to save more? Start by adjusting your 30% wants category gradually.",
-      "📊 Track your 50-30-20 balance weekly to make sure you’re not overspending."
-    ]
-  };
+const aiResponses = {
+  "food": [
+    "🍔 Try meal prepping — it can save both time and money!",
+    "🥗 Consider switching one meal a day to home-cooked food.",
+    "☕ Avoid frequent takeaways or coffees; they add up quickly."
+  ],
+  "transport": [
+    "🚌 Use student transport passes or metro cards for discounts.",
+    "🚴 Walking or cycling saves both money and the planet.",
+    "🚗 Try carpooling with friends to cut your transport costs."
+  ],
+  "books": [
+    "📚 Check your library before buying new books.",
+    "💡 Try second-hand or digital versions to save big.",
+    "🎓 Rent textbooks if you only need them for a semester."
+  ],
+  "leisure": [
+    "🎬 Limit movie nights or streaming subscriptions.",
+    "🎮 Try free or low-cost entertainment alternatives.",
+    "🧩 Plan leisure spending so it doesn’t eat into essentials."
+  ],
+  "others": [
+    "💭 Review these miscellaneous expenses — are they necessary?",
+    "💸 Track these purchases carefully to spot patterns.",
+    "📊 Even small untracked items can add up fast — note everything."
+  ]
+};
 
-  function showTip(message) {
-    const popup = document.createElement("div");
-    popup.className = "tip-popup";
-    popup.innerHTML = `<i class="fas fa-lightbulb" style="color:#ffc107;"></i> ${message}`;
-    document.body.appendChild(popup);
-    setTimeout(() => popup.remove(), 5000);
-  }
+// Append message to chat log
+function appendMessage(sender, message) {
+  const log = document.getElementById("ai-chat-log");
+  const div = document.createElement("div");
+  div.style.marginBottom = "8px";
+  div.innerHTML = `<strong>${sender}:</strong> ${message}`;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
 
-  function expenseAI() {
-    const categories = Object.keys(aiResponses);
-    const randomCat = categories[Math.floor(Math.random() * categories.length)];
-    const suggestion = aiResponses[randomCat][Math.floor(Math.random() * aiResponses[randomCat].length)];
-    showTip(`🤖 Expense AI: ${suggestion}`);
+// Chatbot logic
+function askExpenseAI() {
+  const input = document.getElementById("ai-chat-input");
+  const query = input.value.trim().toLowerCase();
+  if(!query) return;
+  
+  appendMessage("You", input.value);
+  input.value = "";
+
+  let response = "🤖 Sorry, I didn't understand. Ask about food, transport, books, leisure, others, or budget.";
+
+  // Budget breakdown using 50/30/20 if user asks
+  if(query.includes("budget") || query.includes("50/30/20") || query.includes("save")) {
+    const totalBudget = parseFloat(prompt("Enter your monthly budget amount ₹:"));
+    if(!isNaN(totalBudget) && totalBudget>0){
+      const needs = (totalBudget*0.5).toFixed(2);
+      const wants = (totalBudget*0.3).toFixed(2);
+      const savings = (totalBudget*0.2).toFixed(2);
+      response = `🤖 Using the 50/30/20 rule for ₹${totalBudget}:  
+      🏠 Needs (50%): ₹${needs}  
+      🎉 Wants (30%): ₹${wants}  
+      💰 Savings (20%): ₹${savings}`;
+    } else {
+      response = "🤖 Invalid budget amount!";
+    }
   }
+  else if(query.includes("food")) response = "🤖 " + aiResponses["food"][Math.floor(Math.random() * aiResponses["food"].length)];
+  else if(query.includes("transport")) response = "🤖 " + aiResponses["transport"][Math.floor(Math.random() * aiResponses["transport"].length)];
+  else if(query.includes("book")) response = "🤖 " + aiResponses["books"][Math.floor(Math.random() * aiResponses["books"].length)];
+  else if(query.includes("leisure") || query.includes("fun")) response = "🤖 " + aiResponses["leisure"][Math.floor(Math.random() * aiResponses["leisure"].length)];
+  else if(query.includes("other")) response = "🤖 " + aiResponses["others"][Math.floor(Math.random() * aiResponses["others"].length)];
+
+  appendMessage("Expense AI", response);
+}
 </script>
+
 
 
 <footer>
@@ -320,6 +340,7 @@ footer {
 
 </body>
 </html>
+
 
 
 
