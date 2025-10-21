@@ -257,78 +257,59 @@ footer {
   </div>
 </div>
 
-<script>
-// ---------------- Expense AI Feature ----------------
 
-// Predefined AI responses for each spending category
-const aiResponses = {
+<!-- Expense AI Script -->
+<script>
+  const aiResponses = {
     "food": [
-        "🍔 Try meal prepping — it can save both time and money!",
-        "🥗 Consider switching one meal a day to home-cooked food.",
-        "☕ Avoid frequent takeaways or coffees; they add up quickly."
+      "🍔 Try meal prepping — it can save both time and money!",
+      "🥗 Consider switching one meal a day to home-cooked food.",
+      "☕ Avoid frequent takeaways or coffees; they add up quickly."
     ],
     "transport": [
-        "🚌 Use student transport passes or metro cards for discounts.",
-        "🚴 Walking or cycling saves both money and the planet.",
-        "🚗 Try carpooling with friends to cut your transport costs."
+      "🚌 Use student transport passes or metro cards for discounts.",
+      "🚴 Walking or cycling saves both money and the planet.",
+      "🚗 Try carpooling with friends to cut your transport costs."
     ],
     "books": [
-        "📚 Check your library before buying new books.",
-        "💡 Try second-hand or digital versions to save big.",
-        "🎓 Rent textbooks if you only need them for a semester."
+      "📚 Check your library before buying new books.",
+      "💡 Try second-hand or digital versions to save big.",
+      "🎓 Rent textbooks if you only need them for a semester."
     ],
     "leisure": [
-        "🎬 Limit movie nights or streaming subscriptions.",
-        "🎮 Try free or low-cost entertainment alternatives.",
-        "🧩 Plan leisure spending so it doesn’t eat into essentials."
+      "🎬 Limit movie nights or streaming subscriptions.",
+      "🎮 Try free or low-cost entertainment alternatives.",
+      "🧩 Plan leisure spending so it doesn’t eat into essentials."
     ],
     "others": [
-        "💭 Review these miscellaneous expenses — are they necessary?",
-        "💸 Track these purchases carefully to spot patterns.",
-        "📊 Even small untracked items can add up fast — note everything."
+      "💭 Review these miscellaneous expenses — are they necessary?",
+      "💸 Track these purchases carefully to spot patterns.",
+      "📊 Even small untracked items can add up fast — note everything."
+    ],
+    "budgeting": [
+      "💰 Follow the 50/30/20 rule — 50% for needs, 30% for wants, 20% for savings!",
+      "📈 Divide your allowance: 50% essentials, 30% fun, 20% savings — simple and smart!",
+      "🧾 The 50-30-20 plan helps you stay balanced — try automating the 20% savings part.",
+      "💸 Want to save more? Start by adjusting your 30% wants category gradually.",
+      "📊 Track your 50-30-20 balance weekly to make sure you’re not overspending."
     ]
-};
+  };
 
-// Function to show a temporary popup tip
-function showTip(message) {
+  function showTip(message) {
     const popup = document.createElement("div");
     popup.className = "tip-popup";
     popup.innerHTML = `<i class="fas fa-lightbulb" style="color:#ffc107;"></i> ${message}`;
     document.body.appendChild(popup);
     setTimeout(() => popup.remove(), 5000);
-}
+  }
 
-// Core AI logic — gives advice based on latest expense
-function expenseAI() {
-    if (!expenses || expenses.length === 0) return;
-
-    const lastExpense = expenses[expenses.length - 1];
-    let cat = lastExpense.category.toLowerCase();
-
-    // Fallback for unknown categories
-    if (!aiResponses[cat]) cat = "others";
-
-    // Pick a random response
-    const suggestions = aiResponses[cat];
-    const message = suggestions[Math.floor(Math.random() * suggestions.length)];
-
-    // Display suggestion
-    showTip(`🤖 Expense AI: ${message}`);
-}
-
-// Wrap the original addExpense function to trigger AI after adding
-const originalAddExpense = addExpense;
-addExpense = async function() {
-    await originalAddExpense();
-    expenseAI();
-};
-
-// Optional: Show an AI tip when the page loads (based on last added expense)
-window.addEventListener("load", () => {
-    if (expenses && expenses.length > 0) expenseAI();
-});
+  function expenseAI() {
+    const categories = Object.keys(aiResponses);
+    const randomCat = categories[Math.floor(Math.random() * categories.length)];
+    const suggestion = aiResponses[randomCat][Math.floor(Math.random() * aiResponses[randomCat].length)];
+    showTip(`🤖 Expense AI: ${suggestion}`);
+  }
 </script>
-
 
 
 <footer>
@@ -339,6 +320,7 @@ window.addEventListener("load", () => {
 
 </body>
 </html>
+
 
 
 
