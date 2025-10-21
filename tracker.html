@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="A comprehensive student expense tracker with smart tips, warnings, and budget analytics.">
+<meta name="description" content="A comprehensive student expense tracker with smart tips, warnings, budget analytics, and AI suggestions.">
 <title>Expense Tracker | Student Budget Buddy</title>
 
 <!-- Fonts & Icons -->
@@ -12,81 +12,6 @@
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- Firebase -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDwmJ-6PWeD6x-5rjiWywsFMDlEFSSCsgc",
-    authDomain: "student-budget-tracker-ac367.firebaseapp.com",
-    projectId: "student-budget-tracker-ac367",
-    storageBucket: "student-budget-tracker-ac367.appspot.com",
-    messagingSenderId: "367537585165",
-    appId: "1:367537585165:web:cb945c4d12cad3914ee944"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  let expenses = [];
-  let budget = 0;
-  let currentUser = null;
-
-  // Authentication
-  async function login() {
-    const email = prompt("Enter your email:");
-    const password = prompt("Enter your password:");
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (err) {
-      if (err.code === "auth/user-not-found") {
-        const create = confirm("User not found. Create a new account?");
-        if (create) {
-          await createUserWithEmailAndPassword(auth, email, password);
-        }
-      } else {
-        alert(err.message);
-      }
-    }
-  }
-
-  onAuthStateChanged(auth, async user => {
-    if (user) {
-      currentUser = user;
-      document.getElementById("auth-status").innerText = `Logged in as: ${user.email}`;
-      await loadData();
-    } else {
-      currentUser = null;
-      document.getElementById("auth-status").innerText = "Not logged in";
-    }
-  });
-
-  async function loadData() {
-    if (!currentUser) return;
-    const docRef = doc(db, "users", currentUser.uid);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      expenses = data.expenses || [];
-      budget = data.budget || 0;
-      document.getElementById("budget").value = budget;
-      renderTable();
-    } else {
-      await setDoc(docRef, { expenses: [], budget: 0 });
-    }
-  }
-
-  async function saveData() {
-    if (!currentUser) return;
-    await setDoc(doc(db, "users", currentUser.uid), { expenses, budget });
-  }
-
-  window.login = login;
-</script>
 
 <style>
 body {
@@ -234,12 +159,9 @@ tr:hover{
     z-index:9999;
     animation: slideUp 0.5s ease;
 }
-#auth-status{
-    margin-bottom:15px;
-    font-weight:bold;
-}
 @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
 @keyframes slideUp{from{transform:translateY(20px) translateX(-50%); opacity:0;} to{transform:translateY(0) translateX(-50%); opacity:1;}}
+/* Mobile adjustments */
 @media(max-width:600px){
     header h1{font-size:1.5em;}
     nav a{font-size:0.9em;padding:6px 8px;}
@@ -249,11 +171,11 @@ tr:hover{
 </style>
 </head>
 <body>
+
 <header>
 <h1>Expense Tracker</h1>
-<div id="auth-status">Not logged in</div>
-<button onclick="login()">Login / Create Account</button>
 </header>
+
 <nav>
 <a href="index.html">Home</a>
 <a href="tracker.html">Expense Tracker</a>
@@ -312,173 +234,327 @@ Total Spent: ₹<span id="total">0</span>
 <div class="video-container">
 <iframe src="https://www.youtube.com/embed/MXCvtC0HqLE?start=478&autoplay=0" title="Money Management for Students" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
-</div>
-
 <script type="module">
-import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+// Import Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.1/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.6.1/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.6.1/firebase-auth.js";
 
-function checkOthers(val){
-    const otherInput = document.getElementById("otherCategory");
-    otherInput.style.display = val==="Others" ? "inline-block":"none";
-    if(val==="Others") otherInput.focus();
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyDwmJ-6PWeD6x-5rjiWywsFMDlEFSSCsgc",
+  authDomain: "student-budget-tracker-ac367.firebaseapp.com",
+  projectId: "student-budget-tracker-ac367",
+  storageBucket: "student-budget-tracker-ac367.appspot.com",
+  messagingSenderId: "367537585165",
+  appId: "1:367537585165:web:cb945c4d12cad3914ee944"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Elements
+const descInput = document.getElementById("desc");
+const amountInput = document.getElementById("amount");
+const categorySelect = document.getElementById("category");
+const otherCategoryInput = document.getElementById("otherCategory");
+const dateInput = document.getElementById("date");
+const expenseTableBody = document.querySelector("#expenseTable tbody");
+const totalEl = document.getElementById("total");
+const budgetWarning = document.getElementById("budget-warning");
+const budgetStatus = document.getElementById("budget-status");
+const budgetInput = document.getElementById("budget");
+
+// State
+let expenses = [];
+let budget = 0;
+let userId = null;
+let chartInstance = null;
+
+// Expense AI responses
+const aiResponses = {
+  "food": [
+    "🍔 Try meal prepping — it can save both time and money!",
+    "🥗 Consider switching one meal a day to home-cooked food.",
+    "☕ Avoid frequent takeaways or coffees; they add up quickly."
+  ],
+  "transport": [
+    "🚌 Use student transport passes or metro cards for discounts.",
+    "🚴 Walking or cycling saves both money and the planet.",
+    "🚗 Try carpooling with friends to cut your transport costs."
+  ],
+  "books": [
+    "📚 Check your library before buying new books.",
+    "💡 Try second-hand or digital versions to save big.",
+    "🎓 Rent textbooks if you only need them for a semester."
+  ],
+  "leisure": [
+    "🎬 Limit movie nights or streaming subscriptions.",
+    "🎮 Try free or low-cost entertainment alternatives.",
+    "🧩 Plan leisure spending so it doesn’t eat into essentials."
+  ],
+  "others": [
+    "💭 Review these miscellaneous expenses — are they necessary?",
+    "💸 Track these purchases carefully to spot patterns.",
+    "📊 Even small untracked items can add up fast — note everything."
+  ]
+};
+
+// ---------------------- AUTH ----------------------
+function promptLogin() {
+  let email = prompt("Enter your email for login:");
+  let password = prompt("Enter password:");
+
+  signInWithEmailAndPassword(auth, email, password)
+    .then(userCredential => {
+      userId = userCredential.user.uid;
+      loadUserData();
+    })
+    .catch(error => {
+      // If user not found, create account automatically
+      if(error.code === "auth/user-not-found"){
+        createUserWithEmailAndPassword(auth, email, password)
+          .then(userCredential => {
+            userId = userCredential.user.uid;
+            alert("Account created successfully!");
+            loadUserData();
+          })
+          .catch(err=>alert("Error: "+err.message));
+      } else alert("Login error: "+error.message);
+    });
 }
 
-async function addExpense(){
-    const desc = document.getElementById("desc").value.trim();
-    const amount = parseFloat(document.getElementById("amount").value);
-    let category = document.getElementById("category").value;
-    const otherCat = document.getElementById("otherCategory").value.trim();
-    if(category==="Others" && otherCat) category=otherCat;
-    const date = document.getElementById("date").value || new Date().toISOString().split('T')[0];
-    if(!desc || isNaN(amount) || amount<=0){ alert("Enter valid description and positive amount!"); return;}
-    expenses.push({desc, amount, category, date});
-    await saveData();
-    renderTable();
-    clearForm();
+onAuthStateChanged(auth, (user) => {
+  if(user) {
+    userId = user.uid;
+    loadUserData();
+  } else {
+    promptLogin();
+  }
+});
+
+// ---------------------- FIRESTORE ----------------------
+async function loadUserData(){
+  // Load budget
+  const budgetDoc = doc(db,"users",userId);
+  const snapshot = await getDocs(collection(db,"users",userId,"expenses"));
+  expenses = snapshot.docs.map(d=>d.data());
+  renderTable();
+
+  // Load budget separately
+  const userSnap = await getDocs(collection(db,"users"));
+  const docRef = doc(db,"users",userId);
+  onSnapshot(docRef,(docSnap)=>{
+    if(docSnap.exists()){
+      budget = docSnap.data().budget || 0;
+      budgetInput.value = budget;
+      checkBudget(getTotal());
+    }
+  });
+}
+
+// Save single expense
+async function saveExpenseToFirestore(exp){
+  const expenseDoc = doc(db,"users",userId,"expenses",Date.now().toString());
+  await setDoc(expenseDoc, exp);
+}
+
+// Save budget
+async function saveBudgetToFirestore(){
+  const userDoc = doc(db,"users",userId);
+  await setDoc(userDoc,{budget},{merge:true});
+}
+
+// ---------------------- UI LOGIC ----------------------
+function checkOthers(val){
+  otherCategoryInput.style.display = val==="Others" ? "inline-block":"none";
+  if(val==="Others") otherCategoryInput.focus();
+}
+
+function addExpense(){
+  const desc = descInput.value.trim();
+  const amount = parseFloat(amountInput.value);
+  let category = categorySelect.value;
+  if(category==="Others" && otherCategoryInput.value.trim()) category = otherCategoryInput.value.trim();
+  const date = dateInput.value || new Date().toISOString().split('T')[0];
+
+  if(!desc || isNaN(amount) || amount<=0){ alert("Enter valid description and positive amount!"); return;}
+
+  const newExp = {desc, amount, category, date};
+  expenses.push(newExp);
+  saveExpenseToFirestore(newExp);
+  renderTable();
+  clearForm();
+  expenseAI(); // call AI suggestion after adding
 }
 
 function clearForm(){
-    document.getElementById("desc").value="";
-    document.getElementById("amount").value="";
-    document.getElementById("category").value="Food";
-    document.getElementById("otherCategory").value="";
-    document.getElementById("otherCategory").style.display="none";
-    document.getElementById("date").value="";
-}
-
-async function setBudget(){
-    budget=parseFloat(document.getElementById("budget").value);
-    await saveData();
-    checkBudget(parseFloat(document.getElementById("total").innerText));
-}
-
-function checkBudget(total){
-    const warning = document.getElementById("budget-warning");
-    const status = document.getElementById("budget-status");
-    if(budget>0 && total>budget){
-        warning.style.display="block";
-        warning.innerText="⚠️ Budget Exceeded! Please cut down! This might affect your finances badly, but you can still continue using the tracker.";
-        status.innerText=` (Budget: ₹${budget})`;
-    }
-    else{
-        warning.style.display="none";
-        status.innerText=` (Budget: ₹${budget})`;
-    }
-}
-
-let chartInstance=null;
-function renderChart(catTotals){
-    const ctx=document.getElementById("expenseChart").getContext("2d");
-    if(chartInstance) chartInstance.destroy();
-    chartInstance=new Chart(ctx,{
-        type:'pie',
-        data:{
-            labels:Object.keys(catTotals),
-            datasets:[{
-                data:Object.values(catTotals),
-                backgroundColor:['#a5d6a7','#66bb6a','#388e3c','#00c853','#b9f6ca','#00e676','#1b5e20']
-            }]
-        }
-    });
-}
-
-function showTip(message){
-    const popup=document.createElement("div");
-    popup.className="tip-popup";
-    popup.innerHTML=`<i class="fas fa-lightbulb" style="color:#ffc107;"></i> ${message}`;
-    document.body.appendChild(popup);
-    setTimeout(()=>{ popup.remove(); },5000);
-}
-
-function smartTips(total, catTotals){
-    if((catTotals['Food']||0)/total*100>40) showTip("🍔 Food is taking over your budget! Consider cheaper meals.");
-    if(budget>0 && total>budget*0.9) showTip("⚠️ You're close to your monthly budget! Track carefully.");
-    Object.keys(catTotals).forEach(cat=>{
-        if(!['Food','Transport','Books','Leisure'].includes(cat)){
-            if(catTotals[cat]/total*100>30) showTip(`💡 ${cat} is taking over your budget! Consider saving money.`);
-        }
-    });
+  descInput.value="";
+  amountInput.value="";
+  categorySelect.value="Food";
+  otherCategoryInput.value="";
+  otherCategoryInput.style.display="none";
+  dateInput.value="";
 }
 
 function renderTable(){
-    const tbody = document.querySelector("#expenseTable tbody");
-    tbody.innerHTML="";
-    let total=0;
-    const catTotals={};
+  expenseTableBody.innerHTML="";
+  const catTotals={};
+  let total = 0;
 
-    expenses.forEach((item,index)=>{
-        total+=parseFloat(item.amount);
-        catTotals[item.category]= (catTotals[item.category] || 0)+parseFloat(item.amount);
-        tbody.innerHTML+=`<tr>
-        <td>${item.desc}</td>
-        <td>${item.category}</td>
-        <td>₹${item.amount.toFixed(2)}</td>
-        <td>${item.date}</td>
-        <td>
-            <button class="edit-btn" onclick="editExpense(${index})">Edit</button>
-            <button class="delete-btn" onclick="deleteExpense(${index})">Delete</button>
-        </td>
-        </tr>`;
-    });
+  expenses.forEach((item,index)=>{
+    total += item.amount;
+    catTotals[item.category] = (catTotals[item.category] || 0) + item.amount;
 
-    document.getElementById("total").innerText=total.toFixed(2);
-    checkBudget(total);
-    renderChart(catTotals);
-    smartTips(total,catTotals);
+    expenseTableBody.innerHTML += `<tr>
+      <td>${item.desc}</td>
+      <td>${item.category}</td>
+      <td>₹${item.amount.toFixed(2)}</td>
+      <td>${item.date}</td>
+      <td>
+        <button class="edit-btn" onclick="editExpense(${index})">Edit</button>
+        <button class="delete-btn" onclick="deleteExpense(${index})">Delete</button>
+      </td>
+    </tr>`;
+  });
+
+  totalEl.innerText = total.toFixed(2);
+  checkBudget(total);
+  renderChart(catTotals);
+  smartTips(total,catTotals);
 }
 
-async function deleteExpense(index){ expenses.splice(index,1); await saveData(); renderTable(); }
+function deleteExpense(index){
+  expenses.splice(index,1);
+  // Optional: update Firestore (for simplicity not removing doc in this snippet)
+  renderTable();
+}
 
-async function editExpense(index){
-    const newDesc = prompt("Edit Description:", expenses[index].desc);
-    const newAmount = prompt("Edit Amount:", expenses[index].amount);
-    const newCategory = prompt("Edit Category:", expenses[index].category);
-    const newDate = prompt("Edit Date (YYYY-MM-DD):", expenses[index].date);
-    if(newDesc && !isNaN(newAmount) && newAmount>0 && newCategory && newDate){
-        expenses[index]={desc:newDesc, amount:parseFloat(newAmount), category:newCategory, date:newDate};
-        await saveData(); renderTable();
-    } else alert("Invalid input!");
+function editExpense(index){
+  const newDesc = prompt("Edit Description:", expenses[index].desc);
+  const newAmount = parseFloat(prompt("Edit Amount:", expenses[index].amount));
+  const newCategory = prompt("Edit Category:", expenses[index].category);
+  const newDate = prompt("Edit Date (YYYY-MM-DD):", expenses[index].date);
+  if(newDesc && !isNaN(newAmount) && newAmount>0 && newCategory && newDate){
+    expenses[index]={desc:newDesc, amount:newAmount, category:newCategory, date:newDate};
+    renderTable();
+  } else alert("Invalid input!");
 }
 
 function sortTable(col){
-    expenses.sort((a,b)=>{
-        if(col===2) return a.amount-b.amount;
-        if(col===3) return new Date(a.date)-new Date(b.date);
-        const keys=["desc","category"];
-        return a[keys[col]]>b[keys[col]]?1:-1;
-    });
-    renderTable();
+  expenses.sort((a,b)=>{
+    if(col===2) return a.amount-b.amount;
+    if(col===3) return new Date(a.date)-new Date(b.date);
+    const keys=["desc","category"];
+    return a[keys[col]]>b[keys[col]]?1:-1;
+  });
+  renderTable();
 }
 
 function searchExpenses(){
-    const query=document.getElementById("search").value.toLowerCase();
-    const filtered=expenses.filter(exp=>exp.desc.toLowerCase().includes(query) || exp.category.toLowerCase().includes(query));
-    renderFilteredTable(filtered);
+  const query = document.getElementById("search").value.toLowerCase();
+  const filtered = expenses.filter(exp => exp.desc.toLowerCase().includes(query) || exp.category.toLowerCase().includes(query));
+  renderFilteredTable(filtered);
 }
 
 function renderFilteredTable(filtered){
-    const tbody = document.querySelector("#expenseTable tbody");
-    tbody.innerHTML="";
-    filtered.forEach(item=>{
-        const index=expenses.indexOf(item);
-        tbody.innerHTML+=`<tr>
-        <td>${item.desc}</td>
-        <td>${item.category}</td>
-        <td>₹${item.amount.toFixed(2)}</td>
-        <td>${item.date}</td>
-        <td>
-            <button class="edit-btn" onclick="editExpense(${index})">Edit</button>
-            <button class="delete-btn" onclick="deleteExpense(${index})">Delete</button>
-        </td>
-        </tr>`;
-    });
+  expenseTableBody.innerHTML="";
+  filtered.forEach(item=>{
+    const index = expenses.indexOf(item);
+    expenseTableBody.innerHTML += `<tr>
+      <td>${item.desc}</td>
+      <td>${item.category}</td>
+      <td>₹${item.amount.toFixed(2)}</td>
+      <td>${item.date}</td>
+      <td>
+        <button class="edit-btn" onclick="editExpense(${index})">Edit</button>
+        <button class="delete-btn" onclick="deleteExpense(${index})">Delete</button>
+      </td>
+    </tr>`;
+  });
+}
+
+function setBudget(){
+  budget = parseFloat(budgetInput.value);
+  saveBudgetToFirestore();
+  checkBudget(getTotal());
+}
+
+function getTotal(){
+  return expenses.reduce((sum,e)=>sum+e.amount,0);
+}
+
+function checkBudget(total){
+  if(budget>0 && total>budget){
+    budgetWarning.style.display="block";
+    budgetWarning.innerText="⚠️ Budget Exceeded! Please cut down!";
+    budgetStatus.innerText=` (Budget: ₹${budget})`;
+  } else{
+    budgetWarning.style.display="none";
+    budgetStatus.innerText=` (Budget: ₹${budget})`;
+  }
+}
+
+function renderChart(catTotals){
+  const ctx = document.getElementById("expenseChart").getContext("2d");
+  if(chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(ctx,{
+    type:'pie',
+    data:{
+      labels:Object.keys(catTotals),
+      datasets:[{
+        data:Object.values(catTotals),
+        backgroundColor:['#a5d6a7','#66bb6a','#388e3c','#00c853','#b9f6ca','#00e676','#1b5e20']
+      }]
+    }
+  });
+}
+
+// -------------------- EXPENSE AI --------------------
+function showTip(message){
+  const popup = document.createElement("div");
+  popup.className = "tip-popup";
+  popup.innerHTML = `<i class="fas fa-lightbulb" style="color:#ffc107;"></i> ${message}`;
+  document.body.appendChild(popup);
+  setTimeout(()=>popup.remove(),5000);
+}
+
+function expenseAI(){
+  // 50-30-20 check
+  const total = getTotal();
+  const essential = expenses.filter(e=>e.category==='Food' || e.category==='Transport').reduce((a,b)=>a+b.amount,0);
+  const wants = expenses.filter(e=>e.category==='Leisure' || e.category==='Books').reduce((a,b)=>a+b.amount,0);
+  const savings = budget-total;
+
+  if(budget>0){
+    if(essential/total > 0.5) showTip("💡 You are spending more than 50% on essentials (Food+Transport). Consider saving more.");
+    if(wants/total > 0.3) showTip("💡 Your wants are above 30% of your spending. Watch your leisure/books.");
+    if(savings/total < 0.2) showTip("💡 Try to save at least 20% of your budget.");
+  }
+
+  // Random AI suggestion
+  const categories = Object.keys(aiResponses);
+  const randomCat = categories[Math.floor(Math.random()*categories.length)];
+  const suggestion = aiResponses[randomCat][Math.floor(Math.random()*aiResponses[randomCat].length)];
+  showTip(`🤖 Expense AI: ${suggestion}`);
+}
+
+// Smart tips per category
+function smartTips(total, catTotals){
+  if((catTotals['Food']||0)/total*100>40) showTip("🍔 Food is taking over your budget! Consider cheaper meals.");
+  if(budget>0 && total>budget*0.9) showTip("⚠️ You're close to your monthly budget! Track carefully.");
+  Object.keys(catTotals).forEach(cat=>{
+    if(!['Food','Transport','Books','Leisure'].includes(cat)){
+      if(catTotals[cat]/total*100>30) showTip(`💡 ${cat} is taking over your budget! Consider saving money.`);
+    }
+  });
 }
 
 renderTable();
 </script>
-
 <footer>
-Student Budget Buddy Contact us at studentbudgetbuddyhelp@gmail.com
+  2025 Student Budget Buddy
 </footer>
 </body>
 </html>
