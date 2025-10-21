@@ -1,306 +1,564 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Expense Tracker | Student Budget Buddy</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      background: linear-gradient(135deg, #d2f7d2, #a0e9a0);
-      color: #333;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A comprehensive student expense tracker with smart tips, warnings, and budget analytics.">
+<title>Expense Tracker | Student Budget Buddy</title>
+
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDwmJ-6PWeD6x-5rjiWywsFMDlEFSSCsgc",
+  authDomain: "student-budget-tracker-ac367.firebaseapp.com",
+  projectId: "student-budget-tracker-ac367",
+  storageBucket: "student-budget-tracker-ac367.appspot.com",
+  messagingSenderId: "367537585165",
+  appId: "1:367537585165:web:cb945c4d12cad3914ee944"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let currentUser = null;
+
+async function authenticate(email, password) {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    document.getElementById('loginModal').style.display = 'none';
+  } catch (loginErr) {
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      document.getElementById('loginModal').style.display = 'none';
+    } catch (signErr) {
+      alert(signErr.message);
     }
-    header {
-      background: #00a651;
-      color: white;
-      text-align: center;
-      padding: 15px;
-      font-size: 1.4em;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-    }
-    nav {
-      background: #007f3f;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      padding: 10px;
-    }
-    nav a {
-      color: white;
-      text-decoration: none;
-      padding: 8px 12px;
-      border-radius: 5px;
-      transition: all 0.3s ease;
-    }
-    nav a:hover {
-      background: rgba(255,255,255,0.2);
-    }
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-    }
-    h2 {
-      text-align: center;
-      color: #007f3f;
-    }
-    .input-group {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 15px;
-    }
-    input, select, button {
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 1em;
-    }
-    button {
-      background: #00a651;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    button:hover {
-      background: #008e47;
-    }
-    #expense-list {
-      margin-top: 20px;
-    }
-    .expense-item {
-      display: flex;
-      justify-content: space-between;
-      background: #f9fff9;
-      padding: 10px;
-      border-radius: 8px;
-      margin: 8px 0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .ai-box {
-      margin-top: 20px;
-      padding: 15px;
-      background: #f1fff1;
-      border-radius: 12px;
-      border-left: 5px solid #00a651;
-    }
-    #login-box {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    #logout-btn {
-      background: #ff4747;
-    }
-    @media (max-width: 600px) {
-      .input-group {
-        flex-direction: column;
-        align-items: center;
-      }
-      input, select, button {
-        width: 90%;
-      }
-    }
-  </style>
+  }
+}
+window.authenticate = authenticate;
+
+onAuthStateChanged(auth, user => {
+  if(user){
+    currentUser = user;
+    document.getElementById('loginBtn').style.display = 'none';
+    document.getElementById('userEmail').innerText = user.email;
+    loadExpenses();
+    loadBudget();
+  } else {
+    currentUser = null;
+    document.getElementById('loginBtn').style.display = 'inline-block';
+    document.getElementById('userEmail').innerText = '';
+  }
+});
+
+// Data structures
+let expenses = [];
+let budget = 0;
+
+// Firestore helpers
+async function loadExpenses(){
+  if(!currentUser) return;
+  const q = query(collection(db, "expenses"), where("userId", "==", currentUser.uid));
+  const snapshot = await getDocs(q);
+  expenses = [];
+  snapshot.forEach(docSnap => {
+    let data = docSnap.data();
+    data.id = docSnap.id;
+    expenses.push(data);
+  });
+  renderTable();
+}
+
+async function loadBudget(){
+  if(!currentUser) return;
+  const budgetDoc = doc(db, "budgets", currentUser.uid);
+  const snap = await getDoc(budgetDoc);
+  if(snap.exists()){
+    budget = snap.data().amount;
+    document.getElementById("budget").value = budget;
+    checkBudget(getTotalSpent());
+  }
+}
+
+async function addExpenseFirestore(exp){
+  if(!currentUser) { alert("Please login to save expenses."); return; }
+  const docRef = await addDoc(collection(db, "expenses"), {...exp, userId: currentUser.uid});
+  exp.id = docRef.id;
+  expenses.push(exp);
+  renderTable();
+}
+
+async function deleteExpenseFirestore(id){
+  if(!currentUser) return;
+  await deleteDoc(doc(db, "expenses", id));
+  expenses = expenses.filter(e => e.id !== id);
+  renderTable();
+}
+
+async function setBudgetFirestore(value){
+  if(!currentUser) { alert("Login to set budget."); return; }
+  const budgetRef = doc(db, "budgets", currentUser.uid);
+  await setDoc(budgetRef, { amount: value });
+  budget = value;
+  checkBudget(getTotalSpent());
+}
+
+// Utility
+function getTotalSpent(){
+  return expenses.reduce((sum,e)=>sum+parseFloat(e.amount),0);
+}
+</script>
+
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    margin:0;
+    background: linear-gradient(135deg, #d2f7d2, #a0e9a0);
+    color: #333;
+    transition: all 0.3s ease;
+}
+header{
+    background: #00a651;
+    color: white;
+    text-align:center;
+    padding:20px 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+nav{
+    background: #007f3f;
+    display:flex;
+    flex-wrap: wrap;
+    justify-content:center;
+    gap:15px;
+    padding:10px;
+}
+nav a{
+    color:white;
+    text-decoration:none;
+    padding:8px 12px;
+    border-radius:5px;
+    transition: all 0.3s ease;
+    text-align:center;
+}
+nav a:hover{
+    background: rgba(255,255,255,0.2);
+}
+.container{
+    max-width:900px;
+    margin:20px auto;
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    animation: fadeIn 0.5s ease;
+}
+input, select, button{
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #ccc;
+    margin-top:10px;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 250px;
+    display:block;
+}
+button{
+    background:#00a651;
+    color:white;
+    border:none;
+    cursor:pointer;
+    margin-top:10px;
+}
+button:hover{
+    background:#007f3f;
+}
+table{
+    width:100%;
+    border-collapse: collapse;
+    margin-top:20px;
+    overflow-x:auto;
+    display:block;
+}
+th, td{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+    text-align:center;
+}
+th{
+    background:#c4f0c4;
+    cursor:pointer;
+}
+tr:hover{
+    background:#e5ffe5;
+}
+.delete-btn, .edit-btn{
+    padding:6px 10px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    color:white;
+}
+.edit-btn{
+    background:#4caf50;
+}
+.edit-btn:hover{background:#388e3c;}
+.delete-btn{
+    background:#f44336;
+}
+.delete-btn:hover{background:#c62828;}
+.summary{
+    margin-top:15px;
+    font-weight:bold;
+    text-align:right;
+}
+.budget-warning{
+    color:red;
+    font-size:1.1em;
+    margin-top:10px;
+    display:none;
+}
+.chart-container{
+    margin-top:20px;
+    max-width: 100%;
+}
+.video-container{
+    position:relative;
+    padding-bottom:56.25%;
+    height:0;
+    overflow:hidden;
+    border-radius:12px;
+    margin:20px auto;
+    max-width:800px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
+.video-container iframe{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    border:0;
+}
+.tip-popup{
+    position:fixed;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#fff;
+    border-radius:12px;
+    padding:12px 20px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:500;
+    z-index:9999;
+    animation: slideUp 0.5s ease;
+}
+@keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
+@keyframes slideUp{from{transform:translateY(20px) translateX(-50%); opacity:0;} to{transform:translateY(0) translateX(-50%); opacity:1;}}
+@media(max-width:600px){
+    header h1{font-size:1.5em;}
+    nav a{font-size:0.9em;padding:6px 8px;}
+    .container{padding:15px;margin:15px;}
+    table, th, td{font-size:0.85em;}
+}
+</style>
 </head>
 <body>
+<header>
+<h1>Expense Tracker</h1>
+</header>
+<nav>
+<a href="index.html">Home</a>
+<a href="tracker.html">Expense Tracker</a>
+<a href="tips.html">Money Tips</a>
+<a href="https://docs.google.com/forms/d/e/1FAIpQLSe0FppmFElsTpw5sPLd8CNJCxoPkCAnOKgH46ebzdR1NTwIgg/viewform">Feedback</a>
+<a href="about.html">About Us</a>
+</nav>
 
-  <header>Expense Tracker 💸</header>
+<div class="container">
+<h2>Add a New Expense</h2>
+<input type="text" id="desc" placeholder="Description">
+<input type="number" id="amount" placeholder="Amount ₹" min="0" step="0.01">
+<select id="category" onchange="checkOthers(this.value)">
+    <option value="Food">Food</option>
+    <option value="Transport">Transport</option>
+    <option value="Books">Books</option>
+    <option value="Leisure">Leisure</option>
+    <option value="Others">Others</option>
+</select>
+<input type="text" id="otherCategory" placeholder="Specify if Others" style="display:none;">
+<input type="date" id="date">
+<button onclick="addExpense()">Add Expense</button>
 
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="tracker.html">Expense Tracker</a>
-    <a href="tips.html">Money Tips</a>
-    <a href="about.html">About</a>
-  </nav>
+<h3>Expense List</h3>
+<input type="text" id="search" placeholder="Search expenses...">
+<button onclick="searchExpenses()">Search</button>
 
-  <main class="container">
-    <div id="login-box">
-      <input type="email" id="email" placeholder="Email" />
-      <input type="password" id="password" placeholder="Password" />
-      <button onclick="login()">Login / Signup</button>
-      <button id="logout-btn" onclick="logout()" style="display:none;">Logout</button>
-    </div>
+<table id="expenseTable">
+<thead>
+<tr>
+<th onclick="sortTable(0)">Description</th>
+<th onclick="sortTable(1)">Category</th>
+<th onclick="sortTable(2)">Amount</th>
+<th onclick="sortTable(3)">Date</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
 
-    <h2>Track Your Expenses</h2>
-    <div class="input-group">
-      <input type="text" id="expense-name" placeholder="Expense Name">
-      <input type="number" id="expense-amount" placeholder="Amount (₹)">
-      <select id="expense-category">
-        <option value="food">Food</option>
-        <option value="transport">Transport</option>
-        <option value="books">Books</option>
-        <option value="leisure">Leisure</option>
-        <option value="others">Others</option>
-      </select>
-      <button onclick="addExpense()">Add Expense</button>
-    </div>
+<div class="summary">
+Total Spent: ₹<span id="total">0</span>
+<span id="budget-status"></span>
+</div>
+<div class="budget-warning" id="budget-warning"></div>
 
-    <div class="input-group">
-      <input type="number" id="budget-limit" placeholder="Set Monthly Budget (₹)">
-      <button onclick="setBudget()">Set Budget</button>
-    </div>
+<h3>Budget Settings</h3>
+<input type="number" id="budget" placeholder="Set Monthly Budget ₹">
+<button onclick="setBudget()">Set Budget</button>
 
-    <div id="expense-list"></div>
+<h3>Expense Breakdown</h3>
+<div class="chart-container">
+<canvas id="expenseChart"></canvas>
+</div>
 
-    <div class="ai-box" id="ai-box">🤖 Expense AI: I’m here to give smart money advice!</div>
-  </main>
+<div class="video-container">
+<iframe src="https://www.youtube.com/embed/MXCvtC0HqLE?start=478&autoplay=0" title="Money Management for Students" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
 
-  <!-- Firebase SDKs -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, where, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+<script>
+// ---------- Utility ----------
+function checkOthers(val){
+  document.getElementById('otherCategory').style.display = (val === "Others") ? 'block' : 'none';
+}
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDwmJ-6PWeD6x-5rjiWywsFMDlEFSSCsgc",
-      authDomain: "student-budget-tracker-ac367.firebaseapp.com",
-      projectId: "student-budget-tracker-ac367",
-      storageBucket: "student-budget-tracker-ac367.firebasestorage.app",
-      messagingSenderId: "367537585165",
-      appId: "1:367537585165:web:cb945c4d12cad3914ee944"
-    };
+// ---------- Render Table ----------
+function renderTable(){
+  const tbody = document.querySelector("#expenseTable tbody");
+  tbody.innerHTML = "";
+  expenses.forEach((exp, index)=>{
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${exp.desc}</td>
+      <td>${exp.category}</td>
+      <td>₹${parseFloat(exp.amount).toFixed(2)}</td>
+      <td>${exp.date}</td>
+      <td>
+        <button class="edit-btn" onclick="editExpense(${index})">Edit</button>
+        <button class="delete-btn" onclick="deleteExpense(${index})">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+  document.getElementById('total').innerText = getTotalSpent().toFixed(2);
+  checkBudget(getTotalSpent());
+  updateChart();
+}
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+// ---------- Add Expense ----------
+async function addExpense(){
+  const desc = document.getElementById('desc').value.trim();
+  let category = document.getElementById('category').value;
+  if(category === "Others"){
+    const other = document.getElementById('otherCategory').value.trim();
+    if(other) category = other;
+  }
+  const amount = parseFloat(document.getElementById('amount').value);
+  const date = document.getElementById('date').value;
+  if(!desc || !category || isNaN(amount) || !date){
+    alert("Please fill all fields correctly!");
+    return;
+  }
+  const expense = {desc, category, amount, date};
+  await addExpenseFirestore(expense);
+  document.getElementById('desc').value = "";
+  document.getElementById('amount').value = "";
+  document.getElementById('date').value = "";
+  document.getElementById('otherCategory').value = "";
+}
 
-    let currentUser = null;
-    let expenses = [];
-    let budget = 0;
+// ---------- Edit/Delete ----------
+function editExpense(index){
+  const exp = expenses[index];
+  document.getElementById('desc').value = exp.desc;
+  document.getElementById('amount').value = exp.amount;
+  document.getElementById('date').value = exp.date;
+  if(["Food","Transport","Books","Leisure"].includes(exp.category)){
+    document.getElementById('category').value = exp.category;
+    document.getElementById('otherCategory').style.display = "none";
+  } else {
+    document.getElementById('category').value = "Others";
+    document.getElementById('otherCategory').style.display = "block";
+    document.getElementById('otherCategory').value = exp.category;
+  }
+  // Delete old entry
+  deleteExpense(index);
+}
 
-    const aiResponses = {
-      "food": ["🍔 Try meal prepping!", "🥗 Eat home-cooked meals more often."],
-      "transport": ["🚴 Try cycling to save costs.", "🚌 Use student passes."],
-      "books": ["📚 Borrow or buy used books.", "💡 Try free PDFs online."],
-      "leisure": ["🎮 Limit entertainment expenses.", "🎬 Budget for fun, but wisely."],
-      "others": ["💭 Review these miscellaneous expenses.", "📊 Track every small spending."]
-    };
+async function deleteExpense(index){
+  const id = expenses[index].id;
+  await deleteExpenseFirestore(id);
+}
 
-    async function login() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+// ---------- Budget ----------
+async function setBudget(){
+  const val = parseFloat(document.getElementById('budget').value);
+  if(isNaN(val) || val<=0){
+    alert("Enter a valid budget!");
+    return;
+  }
+  await setBudgetFirestore(val);
+  alert("Budget saved successfully!");
+}
 
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-      } catch (error) {
-        if (error.code === "auth/user-not-found") {
-          await createUserWithEmailAndPassword(auth, email, password);
-        } else {
-          alert("Error: " + error.message);
-        }
-      }
+function checkBudget(spent){
+  const warning = document.getElementById('budget-warning');
+  const status = document.getElementById('budget-status');
+  if(budget>0){
+    const percent = (spent/budget)*100;
+    status.innerText = ` / Budget ₹${budget}`;
+    if(percent>90) warning.style.display="block", warning.innerText="⚠️ You have spent over 90% of your budget!";
+    else if(percent>75) warning.style.display="block", warning.innerText="⚠️ You have spent over 75% of your budget!";
+    else warning.style.display="none";
+  } else {
+    status.innerText="";
+    warning.style.display="none";
+  }
+}
+
+// ---------- Search ----------
+function searchExpenses(){
+  const query = document.getElementById('search').value.toLowerCase();
+  const filtered = expenses.filter(e=>e.desc.toLowerCase().includes(query) || e.category.toLowerCase().includes(query));
+  const tbody = document.querySelector("#expenseTable tbody");
+  tbody.innerHTML = "";
+  filtered.forEach(exp=>{
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${exp.desc}</td>
+      <td>${exp.category}</td>
+      <td>₹${parseFloat(exp.amount).toFixed(2)}</td>
+      <td>${exp.date}</td>
+      <td>
+        <button class="edit-btn" onclick="editExpense(${expenses.indexOf(exp)})">Edit</button>
+        <button class="delete-btn" onclick="deleteExpense(${expenses.indexOf(exp)})">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+// ---------- Sort Table ----------
+function sortTable(n){
+  const table = document.getElementById("expenseTable");
+  let switching = true, dir="asc";
+  while(switching){
+    switching=false;
+    const rows = table.rows;
+    for(let i=1;i<rows.length-1;i++){
+      let shouldSwitch=false;
+      let x=rows[i].getElementsByTagName("TD")[n];
+      let y=rows[i+1].getElementsByTagName("TD")[n];
+      let xv = (n==2)?parseFloat(x.innerText.replace("₹","")):x.innerText.toLowerCase();
+      let yv = (n==2)?parseFloat(y.innerText.replace("₹","")):y.innerText.toLowerCase();
+      if(dir=="asc" && xv>yv){shouldSwitch=true;break;}
+      if(dir=="desc" && xv<yv){shouldSwitch=true;break;}
     }
+    if(shouldSwitch){
+      rows[i].parentNode.insertBefore(rows[i+1], rows[i]);
+      switching=true;
+    } else if(dir=="asc"){dir="desc";switching=true;}
+  }
+}
 
-    async function logout() {
-      await signOut(auth);
-    }
+// ---------- Chart ----------
+let chart=null;
+function updateChart(){
+  const ctx = document.getElementById('expenseChart').getContext('2d');
+  const catTotals = {};
+  expenses.forEach(e=>{
+    if(catTotals[e.category]) catTotals[e.category]+=parseFloat(e.amount);
+    else catTotals[e.category]=parseFloat(e.amount);
+  });
+  const labels = Object.keys(catTotals);
+  const data = Object.values(catTotals);
+  if(chart) chart.destroy();
+  chart = new Chart(ctx,{
+    type:'pie',
+    data:{
+      labels:labels,
+      datasets:[{
+        data:data,
+        backgroundColor:['#FF6384','#36A2EB','#FFCE56','#4BC0C0','#9966FF','#FF9F40','#C9CBCF']
+      }]
+    },
+    options:{responsive:true,plugins:{legend:{position:'bottom'}}}
+  });
+}
 
-    onAuthStateChanged(auth, async (user) => {
-      const logoutBtn = document.getElementById("logout-btn");
-      if (user) {
-        currentUser = user;
-        logoutBtn.style.display = "inline-block";
-        loadUserData();
-      } else {
-        currentUser = null;
-        logoutBtn.style.display = "none";
-        loadLocalData();
-      }
-    });
+// ---------- Expense AI Tips ----------
+const aiResponses = {
+  "food":["🍔 Meal prep to save money.","🥗 Switch to home-cooked meals.","☕ Avoid frequent takeaways."],
+  "transport":["🚌 Use passes or metro cards.","🚴 Walk/cycle instead.","🚗 Carpool to save."],
+  "books":["📚 Check library first.","💡 Try second-hand books.","🎓 Rent textbooks."],
+  "leisure":["🎬 Limit subscriptions.","🎮 Try free entertainment.","🧩 Plan leisure budget."],
+  "others":["💭 Review miscellaneous expenses.","💸 Track all small items.","📊 Small untracked items add up."]
+};
 
-    async function addExpense() {
-      const name = document.getElementById("expense-name").value.trim();
-      const amount = parseFloat(document.getElementById("expense-amount").value);
-      const category = document.getElementById("expense-category").value;
+function showTip(message){
+  const popup = document.createElement("div");
+  popup.className="tip-popup";
+  popup.innerHTML=`<i class="fas fa-lightbulb" style="color:#ffc107;"></i> ${message}`;
+  document.body.appendChild(popup);
+  setTimeout(()=>popup.remove(),5000);
+}
 
-      if (!name || !amount) return alert("Please fill all fields!");
+function askExpenseAI(){
+  const input = document.getElementById("ai-chat-input");
+  const query = input.value.trim().toLowerCase();
+  if(!query) return;
+  const log = document.getElementById("ai-chat-log");
+  const userMsg = document.createElement("div");
+  userMsg.innerHTML=`<strong>You:</strong> ${input.value}`;
+  log.appendChild(userMsg);
+  input.value="";
 
-      const expense = { name, amount, category, date: new Date().toISOString() };
-      expenses.push(expense);
-      displayExpenses();
+  let response = "🤖 Sorry, I didn't understand. Ask about food, transport, books, leisure, others, or budget.";
 
-      if (currentUser) {
-        await addDoc(collection(db, "users", currentUser.uid, "expenses"), expense);
-      } else {
-        localStorage.setItem("expenses", JSON.stringify(expenses));
-      }
+  if(query.includes("budget")||query.includes("50/30/20")||query.includes("save")){
+    const totalBudget = budget>0?budget:parseFloat(prompt("Enter monthly budget ₹:"));
+    if(!isNaN(totalBudget) && totalBudget>0){
+      const needs=(totalBudget*0.5).toFixed(2);
+      const wants=(totalBudget*0.3).toFixed(2);
+      const savings=(totalBudget*0.2).toFixed(2);
+      response=`🤖 50/30/20 Rule for ₹${totalBudget}: 🏠 Needs: ₹${needs}, 🎉 Wants: ₹${wants}, 💰 Savings: ₹${savings}`;
+    } else response="🤖 Invalid budget!";
+  } else if(query.includes("food")) response="🤖 "+aiResponses["food"][Math.floor(Math.random()*aiResponses["food"].length)];
+  else if(query.includes("transport")) response="🤖 "+aiResponses["transport"][Math.floor(Math.random()*aiResponses["transport"].length)];
+  else if(query.includes("book")) response="🤖 "+aiResponses["books"][Math.floor(Math.random()*aiResponses["books"].length)];
+  else if(query.includes("leisure")||query.includes("fun")) response="🤖 "+aiResponses["leisure"][Math.floor(Math.random()*aiResponses["leisure"].length)];
+  else if(query.includes("other")) response="🤖 "+aiResponses["others"][Math.floor(Math.random()*aiResponses["others"].length)];
 
-      expenseAI(category, amount);
-    }
-
-    async function setBudget() {
-      const newBudget = parseFloat(document.getElementById("budget-limit").value);
-      if (isNaN(newBudget) || newBudget <= 0) return alert("Enter valid budget");
-      budget = newBudget;
-
-      if (currentUser) {
-        await setDoc(doc(db, "users", currentUser.uid, "settings", "budget"), { budget });
-      } else {
-        localStorage.setItem("budget", budget);
-      }
-      alert("Budget set successfully!");
-    }
-
-    async function loadUserData() {
-      expenses = [];
-      const q = query(collection(db, "users", currentUser.uid, "expenses"));
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => expenses.push(doc.data()));
-      displayExpenses();
-
-      const budgetDoc = await getDocs(collection(db, "users", currentUser.uid, "settings"));
-      budgetDoc.forEach((b) => budget = b.data().budget || 0);
-    }
-
-    function loadLocalData() {
-      expenses = JSON.parse(localStorage.getItem("expenses") || "[]");
-      budget = parseFloat(localStorage.getItem("budget") || "0");
-      displayExpenses();
-    }
-
-    function displayExpenses() {
-      const list = document.getElementById("expense-list");
-      list.innerHTML = expenses.map(e => `
-        <div class="expense-item">
-          <span>${e.name} (${e.category})</span>
-          <span>₹${e.amount}</span>
-        </div>
-      `).join("");
-
-      if (budget > 0) {
-        const total = expenses.reduce((sum, e) => sum + e.amount, 0);
-        if (total > budget) {
-          showAI("⚠️ You’ve crossed your budget! Review your expenses.");
-        }
-      }
-    }
-
-    function expenseAI(category, amount) {
-      const suggestion = aiResponses[category][Math.floor(Math.random() * aiResponses[category].length)];
-      const total = expenses.reduce((sum, e) => sum + e.amount, 0);
-      if (budget > 0) {
-        const needs = (budget * 0.5).toFixed(2);
-        const wants = (budget * 0.3).toFixed(2);
-        const savings = (budget * 0.2).toFixed(2);
-        showAI(`🤖 ${suggestion} | 50-30-20 Split → Needs: ₹${needs}, Wants: ₹${wants}, Savings: ₹${savings}`);
-      } else {
-        showAI(`🤖 ${suggestion}`);
-      }
-    }
-
-    function showAI(message) {
-      const aiBox = document.getElementById("ai-box");
-      aiBox.innerText = message;
-    }
-  </script>
+  const aiMsg=document.createElement("div");
+  aiMsg.innerHTML=`<strong>Expense AI:</strong> ${response}`;
+  log.appendChild(aiMsg);
+  log.scrollTop=log.scrollHeight;
+}
+</script>
 
 </body>
 </html>
