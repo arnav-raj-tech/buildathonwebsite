@@ -1,27 +1,108 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Student Budget Buddy - Track your expenses and manage pocket money smartly.">
-<title>Expense Tracker | Student Budget Buddy</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Student Budget Buddy - Track your expenses and manage pocket money smartly.">
+  <title>Expense Tracker | Student Budget Buddy</title>
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: 'Poppins', sans-serif; margin:0; background:#f8fff8; }
+    header { background:#2e7d32; color:#fff; text-align:center; padding:25px 5px; }
+    nav { background: #1b5e20; display: flex; justify-content: center; gap:10px; padding:7px; }
+    nav a, #loginBtn { color: white; text-decoration:none; padding:7px 15px; border-radius: 4px;}
+    .container { max-width: 950px; margin: 25px auto; background: #fff; border-radius:12px; padding: 18px; box-shadow:0 4px 16px rgba(0,0,0,.13);}
+    table { width: 100%; border-collapse: collapse; margin-top: 18px;}
+    th, td { border-bottom:1px solid #e1e1e1; padding:10px;}
+    th { background:#e3fbe3; cursor:pointer; }
+    .edit-btn, .delete-btn { border:none; background: #8bc34a; color:#fff; padding:5px 10px; border-radius:4px; }
+    .delete-btn { background:#e57373; }
+    .edit-btn:hover, .delete-btn:hover { opacity:.9;}
+    .budget-bar { background: #ccecce; border-radius:8px; padding:9px; margin:11px 0; }
+    footer { text-align:center; padding:10px; color:#555; background:#f1f1f1; }
+    #budget-warning {color:orange;font-weight:500;display:none;}
+  </style>
+</head>
+<body>
 
-<!-- Fonts & Icons -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<header>
+  <h1>Expense Tracker</h1>
+  <p>Track your expenses. Stay on budget.</p>
+  <span id="userEmail"></span>
+</header>
 
-<!-- Firebase SDK -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { 
-  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-import { 
-  getFirestore, collection, addDoc, getDocs, doc, deleteDoc, setDoc, updateDoc, getDoc 
-} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+<nav>
+  <a href="index.html">Home</a>
+  <a href="tracker.html">Expense Tracker</a>
+  <a href="tips.html">Money Tips</a>
+  <a href="about.html">About Us</a>
+  <div id="loginBtn" onclick="document.getElementById('loginModal').style.display='flex'">Login / Sign Up</div>
+</nav>
 
-// 🔹 Firebase configuration
+<div class="container">
+  <h2>Expense Entry</h2>
+  <input type="text" id="desc" placeholder="Description"> 
+  <select id="category" onchange="document.getElementById('otherCategory').style.display=this.value==='Others'?'inline-block':'none'">
+    <option>Food</option>
+    <option>Transport</option>
+    <option>Books</option>
+    <option>Leisure</option>
+    <option>Others</option>
+  </select>
+  <input type="text" id="otherCategory" placeholder="Other Category" style="display:none;">
+  <input type="number" id="amount" placeholder="Amount ₹">
+  <input type="date" id="date">
+  <button onclick="addExpense()">Add Expense</button>
+  <br><br>
+  <input type="number" id="budget" placeholder="Set Budget ₹">
+  <button onclick="setBudgetHandler()">Save Budget</button>
+  <div class="budget-bar">
+    <span>Your total: ₹<span id="total">0.00</span></span>
+    <span style="float:right">Budget: ₹<span id="budgetValue">0.00</span></span>
+    <div id="budget-warning"></div>
+  </div>
+  <input type="text" id="search" placeholder="Search expenses..." onkeyup="searchExpenses()">
+  <table id="expenseTable">
+    <thead>
+      <tr>
+        <th onclick="sortTable(0)">Description</th>
+        <th onclick="sortTable(1)">Category</th>
+        <th onclick="sortTable(2)">Amount</th>
+        <th onclick="sortTable(3)">Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <canvas id="expenseChart" style="max-width:330px;margin:25px auto;display:block;"></canvas>
+  <h3>Ask Expense AI</h3>
+  <div style="max-width:340px;">
+    <div id="ai-chat-log" style="height:120px;overflow-y:auto;background:#f9f9f9;padding:8px 5px;border-radius:6px;border:1px solid #e1e1e1;margin-bottom:7px;"></div>
+    <input type="text" id="ai-chat-input" placeholder="Ask about food, transport, books...">
+    <button onclick="askExpenseAI()">Send</button>
+  </div>
+</div>
+
+<div id="loginModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,.4);z-index:99;justify-content:center;align-items:center">
+  <div style="background:#fff;padding:22px 15px;border-radius:8px;max-width:310px;">
+    <h4>Login / Sign Up</h4>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="authenticate(email.value, password.value)">Continue</button>
+    <button onclick="document.getElementById('loginModal').style.display='none'">Close</button>
+  </div>
+</div>
+
+<!-- Firebase compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script>
+// Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDwmJ-6PWeD6x-5rjiWywsFMDlEFSSCsgc",
   authDomain: "student-budget-tracker-ac367.firebaseapp.com",
@@ -30,33 +111,37 @@ const firebaseConfig = {
   messagingSenderId: "367537585165",
   appId: "1:367537585165:web:cb945c4d12cad3914ee944"
 };
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-// 🔹 Initialize Firebase once
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+let expenses = [];
+let budget = 0;
+let chart = null;
 
 // ==================== AUTH SECTION ====================
-async function authenticate(email, password) {
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    alert("Login successful!");
-    document.getElementById("loginModal").style.display = "none";
-    loadExpenses();
-  } catch {
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      alert("Account created successfully!");
+function authenticate(email, password) {
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => {
+      alert("Login successful!");
       document.getElementById("loginModal").style.display = "none";
       loadExpenses();
-    } catch (err) {
-      alert(err.message);
-    }
-  }
+      loadBudget();
+    })
+    .catch(() => {
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          alert("Account created successfully!");
+          document.getElementById("loginModal").style.display = "none";
+          loadExpenses();
+          loadBudget();
+        })
+        .catch((err) => {
+          alert(err.message);
+        });
+    });
 }
-window.authenticate = authenticate;
-
-onAuthStateChanged(auth, user => {
+auth.onAuthStateChanged(user => {
   if (user) {
     document.getElementById("loginBtn").style.display = "none";
     document.getElementById("userEmail").innerText = user.email;
@@ -71,65 +156,50 @@ onAuthStateChanged(auth, user => {
   }
 });
 
-// ==================== EXPENSE + BUDGET HANDLING ====================
-let expenses = [];
-let budget = 0;
-
-// 🔸 Add Expense
-window.addExpense = async function () {
+// ==================== EXPENSE/BUDGET HANDLING ====================
+function addExpense() {
   const user = auth.currentUser;
   if (!user) return alert("Login first!");
-
   const desc = document.getElementById("desc").value.trim();
   let category = document.getElementById("category").value;
   if (category === "Others") category = document.getElementById("otherCategory").value.trim() || "Others";
   const amount = parseFloat(document.getElementById("amount").value);
   const date = document.getElementById("date").value;
-
   if (!desc || !amount || !date) return alert("Please fill all fields!");
-
-  try {
-    await addDoc(collection(db, "expenses"), { uid: user.uid, desc, category, amount, date });
-    alert("Expense added!");
-    document.getElementById("desc").value = "";
-    document.getElementById("amount").value = "";
-    document.getElementById("date").value = "";
-    document.getElementById("otherCategory").value = "";
-    loadExpenses();
-  } catch (err) {
-    alert("Error adding expense: " + err.message);
-  }
-};
-
-// 🔸 Load Expenses
-window.loadExpenses = async function () {
+  db.collection("expenses").add({ uid: user.uid, desc, category, amount, date })
+    .then(() => {
+      alert("Expense added!");
+      document.getElementById("desc").value = "";
+      document.getElementById("amount").value = "";
+      document.getElementById("date").value = "";
+      document.getElementById("otherCategory").value = "";
+      loadExpenses();
+    })
+    .catch(err => alert("Error adding expense: " + err.message));
+}
+function loadExpenses() {
   const user = auth.currentUser;
   if (!user) return;
   expenses = [];
-  const snapshot = await getDocs(collection(db, "expenses"));
-  snapshot.forEach(docSnap => {
-    const data = docSnap.data();
-    if (data.uid === user.uid) expenses.push({ ...data, id: docSnap.id });
+  db.collection("expenses").where("uid", "==", user.uid).get().then(snapshot => {
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      expenses.push({ ...data, id: docSnap.id });
+    });
+    renderTable();
   });
-  renderTable();
-};
-
-// 🔸 Delete Expense
-window.deleteExpense = async function (id) {
+}
+function deleteExpense(id) {
   if (confirm("Delete this expense?")) {
-    await deleteDoc(doc(db, "expenses", id));
-    loadExpenses();
+    db.collection("expenses").doc(id).delete().then(loadExpenses);
   }
-};
-
-// 🔸 Edit Expense
-window.editExpense = function (id) {
+}
+function editExpense(id) {
   const exp = expenses.find(e => e.id === id);
   if (!exp) return;
   document.getElementById("desc").value = exp.desc;
   document.getElementById("amount").value = exp.amount;
   document.getElementById("date").value = exp.date;
-
   if (["Food", "Transport", "Books", "Leisure"].includes(exp.category)) {
     document.getElementById("category").value = exp.category;
     document.getElementById("otherCategory").style.display = "none";
@@ -138,11 +208,8 @@ window.editExpense = function (id) {
     document.getElementById("otherCategory").style.display = "block";
     document.getElementById("otherCategory").value = exp.category;
   }
-
   deleteExpense(id);
-};
-
-// 🔸 Render Table
+}
 function renderTable() {
   const tbody = document.querySelector("#expenseTable tbody");
   tbody.innerHTML = "";
@@ -162,40 +229,38 @@ function renderTable() {
     tbody.appendChild(tr);
   });
   document.getElementById("total").innerText = total.toFixed(2);
-
+  document.getElementById("budgetValue").innerText = budget.toFixed(2);
   if (budget > 0 && total > budget) {
     document.getElementById("budget-warning").style.display = "block";
     document.getElementById("budget-warning").innerText = "⚠️ You have exceeded your budget!";
   } else {
     document.getElementById("budget-warning").style.display = "none";
   }
-
   updateChart();
 }
-
-// 🔸 Set Budget
-window.setBudgetHandler = async function () {
+function setBudgetHandler() {
   const user = auth.currentUser;
   if (!user) return alert("Login first!");
   const val = parseFloat(document.getElementById("budget").value);
   if (isNaN(val) || val <= 0) return alert("Invalid budget!");
-
-  await setDoc(doc(db, "budgets", user.uid), { value: val });
-  budget = val;
-  alert("Budget set to ₹" + budget);
-  renderTable();
-};
-
-// 🔸 Load Budget
-async function loadBudget() {
+  db.collection("budgets").doc(user.uid).set({ value: val }).then(() => {
+    budget = val;
+    alert("Budget set to ₹" + budget);
+    document.getElementById("budgetValue").innerText = budget.toFixed(2);
+    renderTable();
+  });
+}
+function loadBudget() {
   const user = auth.currentUser;
   if (!user) return;
-  const docSnap = await getDoc(doc(db, "budgets", user.uid));
-  if (docSnap.exists()) budget = docSnap.data().value;
+  db.collection("budgets").doc(user.uid).get().then(docSnap => {
+    if (docSnap.exists) {
+      budget = docSnap.data().value;
+      document.getElementById("budgetValue").innerText = budget.toFixed(2);
+    }
+  });
 }
-
-// 🔸 Search + Sort
-window.searchExpenses = function () {
+function searchExpenses() {
   const term = document.getElementById("search").value.trim().toLowerCase();
   const tbody = document.querySelector("#expenseTable tbody");
   tbody.innerHTML = "";
@@ -217,9 +282,8 @@ window.searchExpenses = function () {
       tbody.appendChild(tr);
     });
   document.getElementById("total").innerText = total.toFixed(2);
-};
-
-window.sortTable = function (n) {
+}
+function sortTable(n) {
   const tbody = document.querySelector("#expenseTable tbody");
   const rows = Array.from(tbody.rows);
   let asc = tbody.getAttribute("data-sort-dir") !== "asc";
@@ -235,11 +299,10 @@ window.sortTable = function (n) {
   tbody.innerHTML = "";
   rows.forEach(r => tbody.appendChild(r));
   tbody.setAttribute("data-sort-dir", asc ? "asc" : "desc");
-};
-
+}
 // ==================== CHART + AI ====================
-let chart;
 function updateChart() {
+  if (!expenses.length) return;
   const catTotals = {};
   expenses.forEach(e => {
     catTotals[e.category] = (catTotals[e.category] || 0) + e.amount;
@@ -254,8 +317,6 @@ function updateChart() {
     options: { plugins: { legend: { position: "bottom" } } }
   });
 }
-
-// 🔸 Expense AI Chatbot
 const aiResponses = {
   food: ["🍔 Meal prep saves money!", "🥗 Try home-cooked meals.", "☕ Avoid takeaways!"],
   transport: ["🚌 Use student passes.", "🚴 Walk or bike.", "🚗 Carpool saves cash."],
@@ -263,7 +324,6 @@ const aiResponses = {
   leisure: ["🎬 Limit streaming.", "🎮 Try free hobbies.", "🧩 Plan leisure spends."],
   others: ["💭 Review misc costs.", "💸 Track carefully.", "📊 Small spends add up."]
 };
-
 function appendMessage(sender, message) {
   const log = document.getElementById("ai-chat-log");
   const div = document.createElement("div");
@@ -272,16 +332,13 @@ function appendMessage(sender, message) {
   log.appendChild(div);
   log.scrollTop = log.scrollHeight;
 }
-
-window.askExpenseAI = function () {
+function askExpenseAI() {
   const input = document.getElementById("ai-chat-input");
   const query = input.value.trim().toLowerCase();
   if (!query) return;
   appendMessage("You", input.value);
   input.value = "";
-
   let response = "🤖 I didn’t understand. Ask about food, transport, books, leisure, others, or budget.";
-
   if (query.includes("budget") || query.includes("50/30/20") || query.includes("save")) {
     const totalBudget = parseFloat(prompt("Enter your monthly budget ₹:"));
     if (!isNaN(totalBudget) && totalBudget > 0) {
@@ -295,14 +352,9 @@ window.askExpenseAI = function () {
   else if (query.includes("book")) response = "🤖 " + aiResponses.books[Math.floor(Math.random() * aiResponses.books.length)];
   else if (query.includes("leisure") || query.includes("fun")) response = "🤖 " + aiResponses.leisure[Math.floor(Math.random() * aiResponses.leisure.length)];
   else if (query.includes("other")) response = "🤖 " + aiResponses.others[Math.floor(Math.random() * aiResponses.others.length)];
-
   appendMessage("Expense AI", response);
-};
+}
 </script>
-
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <footer>
 2025 Student Budget Buddy | Made for students 💸 Contact us at studentbudgetbuddyhelp@gmail.com
 </footer>
