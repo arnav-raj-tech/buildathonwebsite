@@ -6,148 +6,181 @@
   <title>About Us | Student Budget Buddy</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4fdf4;
-      color: #003300;
-      line-height: 1.6;
-    }
+  body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #d2f5d2, #e6ffe6);
+  color: #333;
+  line-height: 1.6;
+}
 
-    /* HEADER */
-    header {
-      background-color: #008000;
-      color: white;
-      padding: 1rem 0;
-      text-align: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
+header {
+  background: #2e7d32;
+  color: #fff;
+  text-align: center;
+  padding: 30px 10px 16px 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.13);
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 2rem;
-      letter-spacing: 1px;
-    }
+header h1 {
+  margin: 0;
+  font-size: 2em;
+  letter-spacing: 1px;
+}
 
-    /* NAVBAR */
-    nav {
-      background-color: #197f3f;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      padding: 10px;
-    }
+nav {
+  background: #1b5e20;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 13px;
+  box-shadow: 0 2px 8px rgba(46,125,50,0.10);
+}
 
-    nav a {
-      background-color: #00b300;
-      color: white;
-      text-decoration: none;
-      padding: 10px 18px;
-      border-radius: 6px;
-      font-weight: 500;
-      transition: all 0.3s;
-    }
+nav a {
+  background-color: #00a651;
+  color: white;
+  text-decoration: none;
+  padding: 9px 20px;
+  border-radius: 7px;
+  font-weight: 500;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 7px rgba(46,125,50,0.07);
+}
 
-    nav a:hover {
-      background-color: #007f00;
-    }
+nav a:hover {
+  background-color: #007f3f;
+  box-shadow: 0 4px 12px rgba(46,125,50,0.15);
+}
 
-    /* CONTAINER */
-    .container {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 25px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+.container {
+  max-width: 900px;
+  margin: 36px auto 0 auto;
+  padding: 32px 24px 24px 24px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 22px rgba(46,125,50,0.10);
+}
 
-    h2 {
-      color: #008000;
-      text-align: center;
-      margin-bottom: 1rem;
-      border-bottom: 3px solid #008000;
-      display: inline-block;
-      padding-bottom: 5px;
-    }
+h2 {
+  color: #00a651;
+  text-align: center;
+  margin-bottom: 1rem;
+  border-bottom: 3px solid #00a651;
+  display: inline-block;
+  padding-bottom: 5px;
+  border-radius: 0 0 7px 7px;
+}
 
-    /* TEAM MEMBERS */
-    .team {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      margin-top: 2rem;
-    }
+/* TEAM MEMBERS */
+.team {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 18px;
+  margin-top: 2rem;
+}
 
-    .member {
-      background-color: #e6f9e6;
-      border: 1px solid #b3e6b3;
-      border-radius: 12px;
-      padding: 15px;
-      margin: 10px;
-      width: 260px;
-      text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+.member {
+  background-color: #e6f9e6;
+  border: 1px solid #b3e6b3;
+  border-radius: 13px;
+  padding: 18px 12px;
+  margin: 5px;
+  width: 255px;
+  text-align: center;
+  transition: transform 0.25s, box-shadow 0.25s;
+  box-shadow: 0 3px 9px rgba(46,125,50,0.08);
+}
 
-    .member:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 15px rgba(0, 128, 0, 0.2);
-    }
+.member:hover {
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 8px 19px rgba(46,125,50,0.18);
+}
 
-    .member h3 {
-      margin-bottom: 5px;
-      color: #004d00;
-    }
+.member h3 {
+  margin-bottom: 5px;
+  color: #007f3f;
+  font-size: 1.12em;
+}
 
-    .member p {
-      margin: 0;
-    }
+.member p {
+  margin: 0;
+  font-size: 1em;
+}
 
-    /* MISSION */
-    .mission {
-      margin-top: 2rem;
-      background-color: #f0fff0;
-      padding: 20px;
-      border-radius: 10px;
-    }
+/* MISSION */
+.mission {
+  margin-top: 2.5rem;
+  background-color: #f0fff0;
+  padding: 22px 16px;
+  border-radius: 11px;
+  box-shadow: 0 2px 10px rgba(46,125,50,0.06);
+  color: #1b5e20;
+  font-size: 1.1em;
+}
 
-    /* ABOUT TEXT */
-    .about-text {
-      margin-top: 20px;
-      font-size: 1em;
-      text-align: justify;
-    }
+/* ABOUT TEXT */
+.about-text {
+  margin-top: 20px;
+  font-size: 1.06em;
+  text-align: justify;
+}
 
-    /* FOOTER */
-    footer {
-      text-align: center;
-      padding: 15px;
-      background: #008000;
-      color: white;
-      font-size: 0.9rem;
-      margin-top: 2rem;
-      letter-spacing: 0.5px;
-    }
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 15px 10px;
+  background: #2e7d32;
+  color: white;
+  font-size: 0.97em;
+  margin-top: 39px;
+  letter-spacing: 0.5px;
+  border-radius: 0 0 13px 13px;
+}
 
-    /* RESPONSIVE */
-    @media (max-width: 768px) {
-      nav {
-        flex-direction: column;
-        align-items: center;
-      }
+/* --- Mobile Responsive --- */
+@media (max-width: 900px) {
+  .container { padding: 18px 3vw; }
+}
 
-      .team {
-        flex-direction: column;
-        align-items: center;
-      }
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0;
+  }
+  .team {
+    flex-direction: column;
+    align-items: center;
+    gap: 13px;
+  }
+  .member {
+    width: 92vw;
+    max-width: 99vw;
+    margin: 10px 0;
+    box-sizing: border-box;
+  }
+  .container {
+    padding: 14px 3vw 18px 3vw;
+  }
+  h2 {
+    font-size: 1.25em;
+    margin-bottom: 8px;
+    padding-bottom: 2px;
+  }
+}
 
-      .member {
-        width: 90%;
-      }
-    }
+@media (max-width:480px) {
+  header h1 { font-size: 1.25em; }
+  .container { padding: 7px 2vw; }
+  .mission,
+  .about-text { font-size: 0.97em; }
+  .member { padding: 12px 4px; font-size: 0.98em; }
+}
+
   </style>
 </head>
 <body>
