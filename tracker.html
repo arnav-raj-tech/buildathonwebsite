@@ -77,6 +77,7 @@ button, .edit-btn, .delete-btn {
   font-size: 1em;
   font-weight: 500;
   transition: background 0.2s;
+  box-sizing: border-box;
 }
 
 button:hover, .edit-btn:hover {
@@ -99,6 +100,7 @@ input[type="text"], input[type="number"], input[type="date"], select {
   border: 1px solid #b6e7c9;
   font-size: 1em;
   transition: border 0.2s;
+  box-sizing: border-box;
 }
 
 input:focus, select:focus {
@@ -208,21 +210,50 @@ footer {
   border: 1px solid #c8e6c9;
 }
 
-/* Responsive */
+/* --- Enhanced Mobile Responsiveness --- */
 @media (max-width:680px) {
   .container {
     padding: 16px 4vw;
+    max-width: 100%;
+  }
+  h2 { font-size: 1.18em; }
+  input[type="text"], input[type="number"], input[type="date"], select, button, .edit-btn, .delete-btn {
+    width: 100%;
+    font-size: 1em;
+    margin: 10px 0;
+    padding: 12px 0;
+    box-sizing: border-box;
   }
   table th, table td {
-    font-size: 0.89em;
+    font-size: 0.96em;
     padding: 7px 3px;
   }
   input[type="text"]#search {
-    width: 80%;
+    width: 95%;
     min-width: 94px;
   }
+  nav {
+    flex-direction: column;
+    gap: 5px;
+    padding: 9px 0;
+  }
+  .budget-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 7px;
+  }
 }
-    </style>
+
+@media (max-width:500px) {
+  table, thead, tbody, th, td, tr { display: block; }
+  th, td { text-align: left; padding: 11px 4px; font-size: 1.04em;}
+  tr { margin-bottom: 13px; }
+  .budget-bar { flex-direction: column; align-items: flex-start; }
+  .container { padding: 8px 1vw; }
+}
+</style>
+/* Chart and images adapt fully to mobile */
+img, canvas { max-width: 100%; height: auto; }
 </head>
 <body>
 
@@ -557,5 +588,6 @@ function askExpenseAI() {
 </footer>
 </body>
 </html>
+
 
 
