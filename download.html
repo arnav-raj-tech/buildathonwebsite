@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Download | Student Budget Buddy</title>
+<meta name="description" content="Download Student Budget Buddy — Windows .exe and Android .apk. Same theme and menu as the website." />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --green-600:#008000;
+    --green-700:#007f3f;
+    --green-500:#00a651;
+    --bg-grad-start:#d2f7d2;
+    --bg-grad-end:#a0e9a0;
+    --muted:#666;
+  }
+  html,body{height:100%;margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,var(--bg-grad-start),var(--bg-grad-end));color:#123;}
+  header{background:linear-gradient(90deg,var(--green-600),var(--green-700));color:#fff;padding:26px 18px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.15);position:relative;}
+  header h1{margin:0;font-size:1.6rem;letter-spacing:0.2px;}
+  header p{margin:6px 0 0;font-weight:500;opacity:0.95;font-size:0.95rem;}
+  nav{background:var(--green-700);display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:10px;border-bottom:4px solid rgba(0,0,0,0.03);}
+  nav a, .nav-btn{color:#fff;text-decoration:none;padding:8px 14px;border-radius:8px;font-weight:600;background:transparent;cursor:pointer;transition:all .18s}
+  nav a:hover, .nav-btn:hover{background:rgba(255,255,255,0.08)}
+  .container{max-width:980px;margin:26px auto;padding:22px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.08)}
+  .hero{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+  .left{flex:1;min-width:260px}
+  .right{width:320px;min-width:220px}
+  h2{color:var(--green-600);margin:0 0 8px}
+  p.lead{margin:0 0 12px;color:var(--muted)}
+  .download-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+  .download-btn{
+    background:var(--green-500); color:#fff; border:none; padding:12px 18px; border-radius:12px; font-weight:700; cursor:pointer;
+    box-shadow:0 8px 20px rgba(0,166,81,0.15); display:inline-flex; gap:12px; align-items:center; text-decoration:none;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .download-btn:hover{ transform:translateY(-3px); box-shadow:0 12px 30px rgba(0,166,81,0.2) }
+  .secondary{ background:#eee;color:#222; box-shadow:none; font-weight:600; }
+  .small{font-size:.92rem}
+  .meta{margin-top:12px;color:#444;font-size:.95rem}
+  .notes{margin-top:16px;padding:14px;background:#f6fff6;border-left:4px solid var(--green-500);border-radius:8px;color:#234}
+  .qr-wrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .qr-card{background:#fff;border:1px solid #eee;padding:10px;border-radius:8px;text-align:center;min-width:120px}
+  .qr-card img{width:110px;height:110px;display:block;margin:6px auto;border-radius:6px}
+  .copy-btn{background:#f5f5f5;border-radius:8px;padding:6px 10px;border:1px solid #ddd;cursor:pointer}
+  .recommend{margin-top:12px;padding:12px;border-radius:8px;background:linear-gradient(90deg, rgba(0,166,81,0.07), rgba(0,0,0,0.03));color:#0b3}
+  footer{padding:12px;text-align:center;color:#555;margin-top:18px;background:transparent}
+  .platform-highlight{outline:3px solid rgba(0,166,81,0.12);box-shadow:0 6px 18px rgba(0,166,81,0.06);border-radius:12px;padding:8px}
+  /* responsive */
+  @media (max-width:900px){ .right{width:100%} .hero{flex-direction:column-reverse} .download-row{justify-content:flex-start} }
+  @media (max-width:420px){ .download-btn{width:100%; justify-content:center } .qr-card img{width:96px;height:96px} }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Student Budget Buddy</h1>
+  <p>Download the app — Windows installer (.exe) and Android (.apk)</p>
+</header>
+
+<nav aria-label="Main Navigation">
+  <a href="index.html">Home</a>
+  <a href="tracker.html">Expense Tracker</a>
+  <a href="tips.html">Money Tips</a>
+  <a href="about.html">About Us</a>
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSe0FppmFElsTpw5sPLd8CNJCxoPkCAnOKgH46ebzdR1NTwIgg/viewform" target="_blank" rel="noopener">Feedback</a>
+</nav>
+
+<main class="container" role="main">
+  <div class="hero">
+    <div class="left">
+      <h2>Download Student Budget Buddy</h2>
+      <p class="lead">Choose the version you need — Windows (.exe) for desktop or Android (.apk) for phones. We recommend the installer that matches your device. Both files are hosted on your Google Drive and served directly.</p>
+
+      <div class="download-row" id="downloadRow">
+        <!-- Buttons are populated by JS so we can highlight recommended platform -->
+        <a id="exeBtn" class="download-btn" href="#" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" style="display:block"><path fill="#fff" d="M3 3h18v18H3z" opacity="0.06"/></svg>
+          Download .exe (Windows)
+        </a>
+
+        <a id="apkBtn" class="download-btn" href="#" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" style="display:block"><path fill="#fff" d="M12 2a5 5 0 0 1 5 5v1h-2V7a3 3 0 0 0-6 0v1H7V7a5 5 0 0 1 5-5z" opacity="0.06"/></svg>
+          Download .apk (Android)
+        </a>
+      </div>
+
+      <div class="meta">
+        <div>Filesize: <strong>depends on build</strong> — shown during download by the host. Verified safe: recommended to download only from official links.</div>
+        <div style="margin-top:8px">Need to share a direct link? Use the copy buttons below or scan the QR with another device.</div>
+      </div>
+
+      <div class="notes" id="installNotes">
+        <strong>Quick install notes</strong>
+        <ul>
+          <li><strong>Windows (.exe)</strong> — run the installer, accept the prompt. If Windows warns about unknown publisher, consider signing the installer before public distribution.</li>
+          <li><strong>Android (.apk)</strong> — after download, enable install from unknown sources for your browser (Settings → Security) then open the .apk to install. Recommend putting .apk on Google Play for easier installs.</li>
+        </ul>
+      </div>
+
+      <div class="recommend" id="platformRecommend" aria-live="polite">
+        Recommended for your device: <strong id="recText">Detecting...</strong>
+      </div>
+    </div>
+
+    <aside class="right">
+      <h3 style="margin:0 0 8px">Scan or copy link</h3>
+      <div class="qr-wrap">
+        <div class="qr-card platform-highlight" id="exeCard">
+          <div style="font-weight:600">Windows .exe</div>
+          <img id="exeQR" alt="QR for exe link" src="" />
+          <div style="margin-top:6px">
+            <button class="copy-btn" data-url-id="exeUrl">Copy link</button>
+          </div>
+        </div>
+
+        <div class="qr-card" id="apkCard">
+          <div style="font-weight:600">Android .apk</div>
+          <img id="apkQR" alt="QR for apk link" src="" />
+          <div style="margin-top:6px">
+            <button class="copy-btn" data-url-id="apkUrl">Copy link</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;color:#444;font-size:.95rem">
+        <div><strong>Direct links</strong></div>
+        <div style="margin-top:6px;word-break:break-all"><a id="exeUrl" href="#" target="_blank" rel="noopener"></a></div>
+        <div style="margin-top:6px;word-break:break-all"><a id="apkUrl" href="#" target="_blank" rel="noopener"></a></div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  © 2025 Student Budget Buddy • Team Phoenix — Contact: studentbudgetbuddyhelp@gmail.com
+</footer>
+
+<script>
+/* ========= INSERT YOUR LINKS HERE =========
+   These are the links you sent — replace if you want to change later.
+*/
+const EXE_URL = "https://drive.google.com/uc?export=download&id=1yuC5-fTIfnwVz5ZraYKbm1sQjHHgPwku";
+const APK_URL = "https://drive.google.com/uc?export=download&id=1UkhGqyFrkx_lvQwYelaB7IUqc0ImVAIT";
+
+/* wire up buttons and links */
+document.getElementById('exeBtn').href = EXE_URL;
+document.getElementById('apkBtn').href = APK_URL;
+document.getElementById('exeUrl').href = EXE_URL;
+document.getElementById('exeUrl').textContent = EXE_URL;
+document.getElementById('apkUrl').href = APK_URL;
+document.getElementById('apkUrl').textContent = APK_URL;
+
+/* generate simple QR images using Google Chart API */
+function makeQR(url){
+  return "https://chart.googleapis.com/chart?cht=qr&chs=220x220&chl=" + encodeURIComponent(url);
+}
+document.getElementById('exeQR').src = makeQR(EXE_URL);
+document.getElementById('apkQR').src = makeQR(APK_URL);
+
+/* copy-link buttons */
+document.querySelectorAll('.copy-btn').forEach(btn=>{
+  btn.addEventListener('click', async ()=> {
+    const urlEl = document.getElementById(btn.dataset.urlId);
+    const url = urlEl ? urlEl.href : '';
+    try{
+      await navigator.clipboard.writeText(url);
+      btn.innerText = "Copied!";
+      setTimeout(()=> btn.innerText = "Copy link", 1500);
+    }catch(e){
+      // fallback
+      prompt("Copy this link:", url);
+    }
+  });
+});
+
+/* platform detect & recommend */
+const ua = navigator.userAgent || navigator.vendor || window.opera;
+const recText = document.getElementById('recText');
+const exeCard = document.getElementById('exeCard');
+const apkCard = document.getElementById('apkCard');
+
+function highlightRecommended(platform){
+  if(platform === 'android'){
+    recText.innerText = ".apk (Android)";
+    apkCard.classList.add('platform-highlight');
+    exeCard.classList.remove('platform-highlight');
+  } else if(platform === 'windows'){
+    recText.innerText = ".exe (Windows)";
+    exeCard.classList.add('platform-highlight');
+    apkCard.classList.remove('platform-highlight');
+  } else if(platform === 'ios') {
+    recText.innerText = "Use the website or Android APK for other devices (iOS requires App Store)";
+    exeCard.classList.remove('platform-highlight');
+    apkCard.classList.remove('platform-highlight');
+  } else {
+    recText.innerText = "Pick the file that matches your device (both available)";
+    exeCard.classList.remove('platform-highlight');
+    apkCard.classList.remove('platform-highlight');
+  }
+}
+
+if(/android/i.test(ua)) highlightRecommended('android');
+else if(/windows nt/i.test(ua) || /win64/i.test(ua)) highlightRecommended('windows');
+else if(/iPad|iPhone|iPod/.test(ua) && !window.MSStream) highlightRecommended('ios');
+else highlightRecommended('other');
+
+/* safety & UX tips: open links in new tab for drive download, show confirm for apk on mobile */
+document.getElementById('apkBtn').addEventListener('click', (e)=>{
+  // On Android, let download start; on other devices show a warning that APK installs require enabling "Unknown sources"
+  if(!/android/i.test(ua)){
+    e.preventDefault();
+    if(!confirm("You're about to download an .apk file which is meant for Android devices. Continue?")) return;
+    window.open(APK_URL, "_blank");
+  }
+});
+
+document.getElementById('exeBtn').addEventListener('click', (e)=>{
+  if(!/windows nt/i.test(ua) && !/win64/i.test(ua)){
+    // still allow download but warn non-windows users
+    if(!confirm("This .exe is for Windows systems. Are you sure you want to download it?")) {
+      e.preventDefault();
+      return;
+    }
+  }
+});
+
+/* accessibility: keyboard focus visible */
+document.addEventListener('keydown',(e)=>{
+  if(e.key === "Tab") document.body.classList.add('show-focus');
+});
+</script>
+
+</body>
+</html>
