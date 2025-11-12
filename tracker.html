@@ -547,49 +547,129 @@ function updateChart() {
     options: { plugins: { legend: { position: "bottom" } } }
   });
 }
-const aiResponses = {
-  food: ["🍔 Meal prep saves money!", "🥗 Try home-cooked meals.", "☕ Avoid takeaways!"],
-  transport: ["🚌 Use student passes.", "🚴 Walk or bike.", "🚗 Carpool saves cash."],
-  books: ["📚 Use library first.", "💡 Buy second-hand books.", "🎓 Rent textbooks."],
-  leisure: ["🎬 Limit streaming.", "🎮 Try free hobbies.", "🧩 Plan leisure spends."],
-  others: ["💭 Review misc costs.", "💸 Track carefully.", "📊 Small spends add up."]
-};
-function appendMessage(sender, message) {
-  const log = document.getElementById("ai-chat-log");
-  const div = document.createElement("div");
-  div.style.marginBottom = "6px";
-  div.innerHTML = `<strong>${sender}:</strong> ${message}`;
-  log.appendChild(div);
-  log.scrollTop = log.scrollHeight;
-}
-function askExpenseAI() {
-  const input = document.getElementById("ai-chat-input");
-  const query = input.value.trim().toLowerCase();
-  if (!query) return;
-  appendMessage("You", input.value);
-  input.value = "";
-  let response = "🤖 I didn’t understand. Ask about food, transport, books, leisure, others, or budget.";
-  if (query.includes("budget") || query.includes("50/30/20") || query.includes("save")) {
-    const totalBudget = parseFloat(prompt("Enter your monthly budget ₹:"));
-    if (!isNaN(totalBudget) && totalBudget > 0) {
-      const needs = (totalBudget * 0.5).toFixed(2);
-      const wants = (totalBudget * 0.3).toFixed(2);
-      const savings = (totalBudget * 0.2).toFixed(2);
-      response = `🤖 For ₹${totalBudget}, 50/30/20 rule → 🏠 Needs: ₹${needs}, 🎉 Wants: ₹${wants}, 💰 Savings: ₹${savings}`;
-    } else response = "🤖 Invalid amount!";
-  } else if (query.includes("food")) response = "🤖 " + aiResponses.food[Math.floor(Math.random() * aiResponses.food.length)];
-  else if (query.includes("transport")) response = "🤖 " + aiResponses.transport[Math.floor(Math.random() * aiResponses.transport.length)];
-  else if (query.includes("book")) response = "🤖 " + aiResponses.books[Math.floor(Math.random() * aiResponses.books.length)];
-  else if (query.includes("leisure") || query.includes("fun")) response = "🤖 " + aiResponses.leisure[Math.floor(Math.random() * aiResponses.leisure.length)];
-  else if (query.includes("other")) response = "🤖 " + aiResponses.others[Math.floor(Math.random() * aiResponses.others.length)];
-  appendMessage("Expense AI", response);
-}
+    const responses = {
+      greetings: [
+        "Hey 👋! What do you want to check today — food, transport, or budget?",
+        "Hi there! Need help managing your pocket money?",
+        "Hello! I can give saving tips or calculate your 50/30/20 budget. Try saying 'budget 5000'.",
+        "Yo! I’m your Expense Buddy — type 'food', 'leisure', or 'save' to begin."
+      ],
+      farewells: [
+        "See you later — small savings, big difference! 💪",
+        "Bye for now! Keep tracking your expenses. 📊",
+        "Take care — remember, even ₹50 counts. 💰"
+      ],
+      food: [
+        "🍔 Try meal prepping — cheaper than ordering in.",
+        "🥗 Replace one restaurant meal with homemade food each week.",
+        "☕ Skip daily coffee; brew your own.",
+        "🍲 Cook once, eat twice — leftovers save both time and cash."
+      ],
+      transport: [
+        "🚌 Use student metro/bus passes — they save 30–50%.",
+        "🚴 Try cycling or walking short distances.",
+        "🚗 Carpool with friends and split fuel.",
+        "🚕 Combine errands in one trip — saves fuel."
+      ],
+      books: [
+        "📚 Borrow or share textbooks instead of buying new.",
+        "💾 Use free e-books or PDFs when possible.",
+        "🎓 Rent books if you need them only for a semester."
+      ],
+      leisure: [
+        "🎮 Choose one streaming platform per month — rotate others.",
+        "🎬 Enjoy campus events instead of paid outings.",
+        "🎧 Try free playlists or hobbies for fun."
+      ],
+      money: [
+        "💰 Automate savings each month.",
+        "📊 Use 50/30/20 rule: 50% needs, 30% wants, 20% savings.",
+        "🧾 Track small spends — they add up!"
+      ],
+      generic: [
+        "🧠 Try saying 'budget 8000' for a personalized breakdown.",
+        "💡 Ask about food, transport, books, or leisure to get saving tips.",
+        "✨ Even tiny changes can make your money last longer!"
+      ]
+    };
+
+    function appendMessage(sender, text) {
+      const log = document.getElementById("ai-chat-log");
+      const div = document.createElement("div");
+      div.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function pick(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function extractAmount(str) {
+      const match = str.match(/₹?\s?(\d+)/);
+      return match ? parseFloat(match[1]) : null;
+    }
+
+    function askExpenseAI() {
+      const input = document.getElementById("ai-chat-input");
+      const query = input.value.trim().toLowerCase();
+      if (!query) return;
+      appendMessage("You", input.value);
+      input.value = "";
+
+      let response = "🤖 Not sure I got that — try saying 'budget 5000' or 'food tips'.";
+
+      const amount = extractAmount(query);
+
+      if (query.includes("hi") || query.includes("hello") || query.includes("hey"))
+        response = pick(responses.greetings);
+      else if (query.includes("bye") || query.includes("see you"))
+        response = pick(responses.farewells);
+      else if (query.includes("food") || query.includes("meal") || query.includes("eat"))
+        response = pick(responses.food);
+      else if (query.includes("transport") || query.includes("bus") || query.includes("bike"))
+        response = pick(responses.transport);
+      else if (query.includes("book") || query.includes("study") || query.includes("library"))
+        response = pick(responses.books);
+      else if (query.includes("leisure") || query.includes("fun") || query.includes("movie"))
+        response = pick(responses.leisure);
+      else if (query.includes("budget") || query.includes("save") || amount) {
+        const total = amount || parseFloat(prompt("Enter your monthly budget ₹:"));
+        if (!isNaN(total) && total > 0) {
+          const needs = (total * 0.5).toFixed(2);
+          const wants = (total * 0.3).toFixed(2);
+          const savings = (total * 0.2).toFixed(2);
+          response = `📊 Budget breakdown for ₹${total}:<br>
+          🏠 Needs (50%): ₹${needs}<br>
+          🎉 Wants (30%): ₹${wants}<br>
+          💰 Savings (20%): ₹${savings}`;
+        } else {
+          response = "🤖 Please enter a valid budget amount!";
+        }
+      } else if (query.includes("money") || query.includes("save") || query.includes("spend"))
+        response = pick(responses.money);
+      else response = pick(responses.generic);
+
+      appendMessage("Expense AI", response);
+    }
+
+    // send button works
+    document.getElementById("ai-chat-send").addEventListener("click", askExpenseAI);
+
+    // also allow Enter key
+    document.getElementById("ai-chat-input").addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        askExpenseAI();
+      }
+    });
 </script>
 <footer>
 2025 Student Budget Buddy | Made for students 💸 Contact us at studentbudgetbuddyhelp@gmail.com
 </footer>
 </body>
 </html>
+
 
 
 
